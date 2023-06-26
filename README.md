@@ -1,24 +1,37 @@
-[metadata]
-name = judini
-version = 0.0.1
-author = Daniel Avila
-author_email = daniel@judini.ai
-description = Judini's python library
-long_description = file: README.md
-long_description_content_type = text/markdown
-url = https://github.com/JudiniLabs/judini-python.git
-project_urls =
-    Bug Tracker = https://github.com/pypa/sampleproject/issues
-classifiers =
-    Programming Language :: Python :: 3
-    License :: OSI Approved :: MIT License
-    Operating System :: OS Independent
+# Judini python package
 
-[options]
-package_dir =
-    = src
-packages = find:
-python_requires = >=3.6
+## Install
 
-[options.packages.find]
-where = src
+``` pip install judini ```
+
+## Use
+
+``` python
+
+# import
+from judini import Judini
+
+def main():
+    # Replace with your actual API key and URL ID
+    api_key = "your_api_key_here"
+    agent_id = "your_agent_id_here"
+
+    # Initialize the Judini class
+    judini_instance = Judini(api_key, agent_id)
+
+    # Optional: update API key or URL ID if needed
+    judini_instance.set_api_key("new_api_key")
+    judini_instance.set_agent_id("new_agent_id")
+
+    # create the user prompt
+    question = "Who is the President of the United States?"
+
+    # Make a POST request
+    response = judini_instance.completion(question)
+
+    # Handle the response as needed
+    print(response)
+
+if __name__ == "__main__":
+    main()
+```
