@@ -8,3 +8,4 @@ src/judini.egg-info/PKG-INFO
 src/judini.egg-info/SOURCES.txt
 src/judini.egg-info/dependency_links.txt
 src/judini.egg-info/top_level.txt
+tests/test_agent.py

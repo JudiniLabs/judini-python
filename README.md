@@ -1,15 +1,19 @@
-# Judini python package
+# Judini Python Package
+This package provides you with an easy way to interact with the Judini API in your Python applications.
 
 ## Install
+To install the package, simply run the following command:
 
-``` pip install judini ```
+```bash 
+pip install judini 
+```
 
-## Use
-
+## Usege
+Below is a sample code demonstrating how to use the Judini package in your Python application:
 ``` python
 
-# import
-from judini import Judini
+# Import the package
+from judini import Agent
 
 def main():
     # Replace with your actual API key and URL ID
@@ -17,17 +21,17 @@ def main():
     agent_id = "your_agent_id_here"
 
     # Initialize the Judini class
-    judini_instance = Judini(api_key, agent_id)
+    agent_instance = Agent(api_key, agent_id)
 
     # Optional: update API key or URL ID if needed
-    judini_instance.set_api_key("new_api_key")
-    judini_instance.set_agent_id("new_agent_id")
+    agent_instance.set_api_key("new_api_key")
+    agent_instance.set_agent_id("new_agent_id")
 
-    # create the user prompt
-    question = "Who is the President of the United States?"
+    # Create the prompt
+    prompt = "Who is the President of the United States?"
 
-    # Make a POST request
-    response = judini_instance.completion(question)
+    # Make a completion request
+    response = agent_instance.completion(prompt, stream=False)
 
     # Handle the response as needed
     print(response)

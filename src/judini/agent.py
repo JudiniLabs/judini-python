@@ -1,7 +1,8 @@
-# judini
+# Agent
 import requests
+import json
 
-class Judini:
+class Agent:
     def __init__(self, api_key, agent_id):
         self.api_key = api_key
         self.agent_id = agent_id
@@ -12,7 +13,7 @@ class Judini:
     def set_agent_id(self, agent_id):
         self.agent_id = agent_id
 
-    def completion(self, prompt):
+    def completion(self, prompt, stream=False):
         # Headers
         headers = {
             "Content-Type": "application/json",
@@ -29,4 +30,26 @@ class Judini:
             ]
         }
         response = requests.post(url, json=data, headers=headers)
-        return response.json()
+        tokens = ''
+        error = ''
+        if(stream == False):
+            for chunk in response.iter_content(chunk_size=1024):
+                if chunk:
+                    raw_data = chunk.decode('utf-8').replace("data: ", '')
+                    if raw_data != "":
+                        lines = raw_data.strip().splitlines()
+                        for line in lines:
+                            line = line.strip()
+                            if line and line != "[DONE]":
+                                try:
+                                    json_object = json.loads(line)
+                                    result = json_object['data']
+                                    result = result.replace("\n", "")
+                                    tokens += result
+                                except json.JSONDecodeError:
+                                    error = line
+                                    #print(f'Error al decodificar el objeto JSON en la línea: {line}')    
+        else:
+            return response
+        
+        return tokens
