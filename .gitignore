@@ -6,6 +6,7 @@
 __pycache__
 build
 *.egg
+*judini.egg*
 .vscode/settings.json
 .ipynb_checkpoints
 .vscode/launch.json

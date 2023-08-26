@@ -1,41 +1,69 @@
 # Judini Python Package
+
 This package provides you with an easy way to interact with the Judini API in your Python applications.
 
 ## Install
+
 To install the package, simply run the following command:
 
-```bash 
-pip install judini 
+```bash
+
+pip  install  judini
+
 ```
 
-## Usege
+## How get API Keys
+
+1- **CODEGPT API KEY**
+
+You must go to https://plus.codegpt.co then go to configuration and go to **Configuration> Access Tokens**
+
+And copy **CODEGPT API KEY**
+
+2 - **AGENT API KEY**
+
+**Agent configuration > Advanced configuration > Agent ID**
+
+And copy **AGENT ID**
+
+## Usage
+
 Below is a sample code demonstrating how to use the Judini package in your Python application:
-``` python
 
-# Import the package
-from judini import Agent
+```python
 
-def main():
-    # Replace with your actual API key and URL ID
-    api_key = "your_api_key_here"
-    agent_id = "your_agent_id_here"
 
-    # Initialize the Judini class
-    agent_instance = Agent(api_key, agent_id)
+import asyncio
+import os
+from judini.codegpt.agent
+import Agent
 
-    # Optional: update API key or URL ID if needed
-    agent_instance.set_api_key("new_api_key")
-    agent_instance.set_agent_id("new_agent_id")
+async  def  main():
+	# Load agent credentials
+	api_key = os.getenv('CODEGPT_API_KEY')
+	agent_id = os.getenv('CODEGPT_AGENT_ID')
 
-    # Create the prompt
-    prompt = "Who is the President of the United States?"
+	# Create an agent instance
+	agent = Agent(api_key, agent_id)
 
-    # Make a completion request
-    response = agent_instance.completion(prompt, stream=False)
+	# Define the test message
+	prompt = "Can you help me?"
 
-    # Handle the response as needed
-    print(response)
+	# Test with stream=False
+	response = await agent.completion(prompt, stream=False) print(f"Response with stream=False: {response}")
+
+	# Test with stream=True
+	response = await agent.completion(prompt, stream=True) print(f"Response with stream=True: {response}")
 
 if __name__ == "__main__":
-    main()
+	asyncio.run(main())
+
 ```
+
+## Changelog
+
+[Changelog](https://github.com/JudiniLabs/judini-python/blob/main/CHANGELOG.md)
+
+## Contributors
+
+[@kevinzeladacl](https://github.com/kevinzeladacl)
