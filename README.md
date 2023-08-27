@@ -35,8 +35,7 @@ Below is a sample code demonstrating how to use the Judini package in your Pytho
 
 import asyncio
 import os
-from judini.codegpt.agent
-import Agent
+from judini.codegpt.agent import Agent
 
 async  def  main():
 	# Load agent credentials
@@ -50,10 +49,12 @@ async  def  main():
 	prompt = "Can you help me?"
 
 	# Test with stream=False
-	response = await agent.completion(prompt, stream=False) print(f"Response with stream=False: {response}")
+	response = await agent.completion(prompt, stream=False)
+	print(f"Response with stream=False: {response}")
 
 	# Test with stream=True
-	response = await agent.completion(prompt, stream=True) print(f"Response with stream=True: {response}")
+	response = await agent.completion(prompt, stream=True)
+	print(f"Response with stream=True: {response}")
 
 if __name__ == "__main__":
 	asyncio.run(main())
