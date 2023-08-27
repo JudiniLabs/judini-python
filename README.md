@@ -12,7 +12,7 @@ pip  install  judini
 
 ```
 
-## How get API Keys
+## How get API Key and AGENT ID
 
 1- **CODEGPT API KEY**
 
@@ -20,7 +20,7 @@ You must go to https://plus.codegpt.co then go to configuration and go to **Conf
 
 And copy **CODEGPT API KEY**
 
-2 - **AGENT API KEY**
+2 - **CODE AGENT ID**
 
 **Agent configuration > Advanced configuration > Agent ID**
 
