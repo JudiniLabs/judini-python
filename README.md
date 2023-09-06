@@ -33,31 +33,25 @@ Below is a sample code demonstrating how to use the Judini package in your Pytho
 ```python
 
 
-import asyncio
 import os
 from judini.codegpt.agent import Agent
 
-async  def  main():
+def Completion():
+
+	prompt = input("ask me something about python")
+
 	# Load agent credentials
-	api_key = os.getenv('CODEGPT_API_KEY')
-	agent_id = os.getenv('CODEGPT_AGENT_ID')
+	codegpt_api_key= os.getenv("CODEGPT_API_KEY")
+    codegpt_agent_id= os.getenv("CODEGPT_AGENT_ID")
 
 	# Create an agent instance
-	agent = Agent(api_key, agent_id)
+    agent_instance = Agent(api_key=codegpt_api_key, agent_id=codegpt_agent_id)
 
-	# Define the test message
-	prompt = "Can you help me?"
+	#stream can be True or False
+	response = agent_instance.completion(prompt, stream=True)
 
-	# Test with stream=False
-	response = await agent.completion(prompt, stream=False)
-	print(f"Response with stream=False: {response}")
+	return  response
 
-	# Test with stream=True
-	response = await agent.completion(prompt, stream=True)
-	print(f"Response with stream=True: {response}")
-
-if __name__ == "__main__":
-	asyncio.run(main())
 
 ```
 
