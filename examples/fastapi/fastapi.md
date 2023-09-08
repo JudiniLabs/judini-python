@@ -8,7 +8,7 @@ This FastAPI application demonstrates how to integrate the Judini Agent to handl
 1.  First, you will need to install all the required packages. Ensure you have `pip` installed and run:
 
 ```bash
-pip install fastapi[all] aiohttp python-dotenv 
+pip install fastapi[all] aiohttp python-dotenv judini
 ```
 
 2.  Clone this repository or download the FastAPI application file.
