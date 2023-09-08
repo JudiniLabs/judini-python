@@ -105,7 +105,7 @@ if  __name__  ==  "__main__":
 
   
 
-[FastAPI](https://github.com/JudiniLabs/judini-python/blob/main/examples/fastapi.md)
+[FastAPI](https://github.com/JudiniLabs/judini-python/blob/main/examples/fastapi/fastapi.md)
 
    
 
