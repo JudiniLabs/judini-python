@@ -1,71 +1,59 @@
-import requests
 import aiohttp
 import json
 from dotenv import load_dotenv
 import os
+import asyncio
+
 load_dotenv()
 
 class Agent:
-    def __init__(self, api_key, agent_id):
+    def __init__(self, api_key, agent_id=""):
         self.api_key = api_key
         self.agent_id = agent_id
+        self.is_streaming = False
 
-    def set_api_key(self, api_key):
-        self.api_key = api_key
+    def is_loading(self):
+        return self.is_streaming
 
-    def set_agent_id(self, agent_id):
-        self.agent_id = agent_id
+    def stop_streaming(self):
+        self.is_streaming = False
 
-    async def get_async_response(self, url, data, headers):
-        async with aiohttp.ClientSession() as session:
-            async with session.post(url, data=data, headers=headers) as response:
-                return await response.text()
-
-    async def completion(self, prompt, stream=False):
+    async def chat_completion(self, prompt, stream=False):
         # Headers
         headers = {
             "Content-Type": "application/json",
             "Authorization": f"Bearer {self.api_key}"
         }
-        
-        # Endpoint
-        url = f'https://playground.judini.ai/api/v1/agent/{self.agent_id}'
-        data = {
-            "messages": [
-                {
-                    "role": "user",
-                    "content": prompt
-                }
-            ]
-        }
 
-        response = ''
-        if not stream:
-            try:
-                response = requests.post(url, json=data, headers=headers)
-                tokens = ''
-                error = ''
-                for chunk in response.iter_content(chunk_size=1024):
-                    if chunk:
-                        raw_data = chunk.decode('utf-8').replace("data: ", '')
-                        if raw_data != "":
-                            lines = raw_data.strip().splitlines()
-                            for line in lines:
-                                line = line.strip()
-                                if line and line != "[DONE]":
-                                    try:
-                                        json_object = json.loads(line)
-                                        result = json_object['data']
-                                        result = result.replace("\n", "")
-                                        tokens += result
-                                    except json.JSONDecodeError:
-                                        error = line
-                return tokens
-            except requests.exceptions.RequestException as e:
-                print(f"An error occurred: {e}")
-        else:
-            try:
-                response = await self.get_async_response(url, json.dumps(data), headers)
-                return response
-            except Exception as e:
-                print(f"An error occurred: {e}")
+        messages = [{"role": "user", "content": prompt}]
+
+        # Endpoint
+        url = f'https://playground.judini.ai/api/v1/agent/{self.agent_id}' if self.agent_id else 'https://playground.judini.ai/api/v1/agent'
+        
+        full_response = ""
+        try:
+            async with aiohttp.ClientSession() as session:
+                async with session.post(url, json={"messages": messages}, headers=headers) as response:
+                    if response.status != 200:
+                        error_message = f"JUDINI: API Response was: {response.status} {response.reason} {'https://docs.codegpt.co/docs/tutorial-ai-providers/judini'}"
+                        raise Exception(error_message)
+
+                    async for line in response.content.iter_any():
+                        text = line.decode('utf-8').replace("data: ", '').strip()
+                        if text == "[DONE]":
+                            self.is_streaming = False
+                            break
+                        try:
+                            data_chunk = json.loads(text)
+                            if stream:
+                                yield data_chunk['data'] + '\n'
+                            else:
+                                full_response += data_chunk['data']
+                        except json.JSONDecodeError:
+                            pass
+                    if not stream:
+                        yield full_response
+
+        except Exception as e:
+            print(f"An error occurred: {e}")
+            self.is_streaming = False
