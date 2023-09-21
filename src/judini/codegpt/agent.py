@@ -28,7 +28,7 @@ class Agent:
         messages = [{"role": "user", "content": prompt}]
 
         # Endpoint
-        url = f'https://playground.judini.ai/api/v1/agent/{self.agent_id}' if self.agent_id else 'https://playground.judini.ai/api/v1/agent'
+        url = f'https://plus.codegpt.co/api/v1/agent/{self.agent_id}' if self.agent_id else 'https://plus.codegpt.co/api/v1/agent'
         
         full_response = ""
         try:
@@ -37,20 +37,23 @@ class Agent:
                     if response.status != 200:
                         error_message = f"JUDINI: API Response was: {response.status} {response.reason} {'https://docs.codegpt.co/docs/tutorial-ai-providers/judini'}"
                         raise Exception(error_message)
-
+                    
                     async for line in response.content.iter_any():
                         text = line.decode('utf-8').replace("data: ", '').strip()
-                        if text == "[DONE]":
-                            self.is_streaming = False
-                            break
-                        try:
-                            data_chunk = json.loads(text)
-                            if stream:
-                                yield data_chunk['data'] + '\n'
-                            else:
-                                full_response += data_chunk['data']
-                        except json.JSONDecodeError:
-                            pass
+                        if text.startswith('{"function":'):
+                            yield text
+                        else:
+                            if text == "[DONE]":
+                                self.is_streaming = False
+                                break
+                            try:
+                                data_chunk = json.loads(text)
+                                if stream:
+                                    yield data_chunk['data'] + '\n'
+                                else:
+                                    full_response += data_chunk['data']
+                            except json.JSONDecodeError:
+                                pass
                     if not stream:
                         yield full_response
 
