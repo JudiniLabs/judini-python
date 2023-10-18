@@ -1,5 +1,5 @@
 
-# Judini Python Package 0.0.16
+# Judini Python Package 0.0.18
 
   
 
@@ -65,35 +65,22 @@ Below is a sample code demonstrating how to use the Judini package in your Pytho
 
 ```python
  
-import os
-
+import asyncio
 from judini.codegpt.agent import Agent
 
- 
- 
-def  main():
+async def chat_example(prompt):
+	CODEGPT_API_KEY = "YOUR_APIKEY"
+	CODEGPT_AGENT_ID = "YOUR_AGENT_ID"
 
-	# Load API key and agent ID from environment variables
-	codegpt_api_key = os.getenv("CODEGPT_API_KEY")
-	codegpt_agent_id = os.getenv("CODEGPT_AGENT_ID")
+	agent_instance = Agent(api_key=CODEGPT_API_KEY, agent_id=CODEGPT_AGENT_ID)
 
-	# Create an agent instance using the provided credentials
-	agent_instance = Agent(api_key=codegpt_api_key, agent_id=codegpt_agent_id)
-
-	# Get user input
-	prompt =  input("Ask the agent something: ")  
-
-	# Use the chat_completion method from the agent instance
-	# This uses asynchronous programming due to the 'async' keyword
-	# Typically, you'd run this inside an event loop
-	# Here's a simple example using asyncio
-	responses = asyncio.run(agent_instance.chat_completion(prompt, stream=True))
-	for response in responses:
+	async for response in agent_instance.chat_completion(prompt, stream=True):
 		print(response)
 
-
-if  __name__  ==  "__main__":
-	main()
+if __name__ == "__main__":
+	text = "First president of USA?"
+	prompt = {"role": "user", "content": text}
+	asyncio.run(chat_example(prompt))
 
   
   
