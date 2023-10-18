@@ -1,9 +1,9 @@
-import aiohttp
-import json
-from dotenv import load_dotenv
 import os
+import json
+import aiohttp
 import asyncio
 import requests
+from dotenv import load_dotenv
 
 load_dotenv()
 
@@ -23,7 +23,7 @@ class Agent:
     def stop_streaming(self):
         self.is_streaming = False
 
-    async def list(self):
+    async def get(self):
         headers = {
             "Content-Type": "application/json",
             "Authorization": f"Bearer {self.api_key}"
@@ -32,17 +32,32 @@ class Agent:
         url = f"{url_server}/v1/agent/{self.agent_id}" if self.agent_id else f"{url_server}/v1/agent"
 
         try:
-            response = await requests.get(url, headers=headers)
-
+            response = requests.get(url, headers=headers)
             if response.status_code != 200:
                 error_message = f"JUDINI: API Response was: {response.status_code} {response.reason} {url_documentation}"
                 raise Exception(error_message)
             else:
-                return response.json()['data']
+                return response.json()
 
         except Exception as e:
             print(f"An error occurred: {e}")
-            self.is_streaming = False
+
+    async def update(self, data):
+        headers = {
+            "Content-Type": "application/json",
+            "Authorization": f"Bearer {self.api_key}"
+        }
+        url = f"{url_server}/v1/agent/{self.agent_id}"
+        try:
+            response = requests.patch(url, json=data, headers=headers)
+            if response.status_code != 200:
+                error_message = f"JUDINI: API Response was: {response.status_code} {response.reason} {url_documentation}"
+                raise Exception(error_message)
+            else:
+                return response.json()
+
+        except Exception as e:
+            print(f"An error occurred: {e}")
 
     async def chat_completion(self, prompt, stream=False):
         # Define los valores de headers, messages y la nueva URL
@@ -64,7 +79,7 @@ class Agent:
         }
 
         print(messages)
-        url = "https://api.codegpt.co/v1/completion"
+        url = f"{url_server}/v1/completion"
 
         full_response = ""
         try:
