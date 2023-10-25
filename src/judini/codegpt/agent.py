@@ -3,9 +3,6 @@ import json
 import aiohttp
 import asyncio
 import requests
-from dotenv import load_dotenv
-
-load_dotenv()
 
 url_server = "https://api.codegpt.co"
 url_documentation = "https://docs.codegpt.co/docs/tutorial-ai-providers/judini"
@@ -66,7 +63,6 @@ class Agent:
             "media_type": "text/event-stream",
             "Authorization": f"Bearer {self.api_key}"
         }
-        print(len(prompt))
 
         try:
             prompt[0]
@@ -78,7 +74,6 @@ class Agent:
             "messages": prompt
         }
 
-        print(messages)
         url = f"{url_server}/v1/completion"
 
         full_response = ""
