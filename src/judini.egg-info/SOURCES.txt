@@ -3,9 +3,10 @@ README.md
 pyproject.toml
 setup.cfg
 src/judini/__init__.py
-src/judini/agent.py
 src/judini.egg-info/PKG-INFO
 src/judini.egg-info/SOURCES.txt
 src/judini.egg-info/dependency_links.txt
+src/judini.egg-info/requires.txt
 src/judini.egg-info/top_level.txt
-tests/test_agent.py
+src/judini/codegpt/__init__.py
+src/judini/codegpt/agent.py
