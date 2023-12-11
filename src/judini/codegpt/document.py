@@ -72,7 +72,6 @@ class Document:
 
     def load(self,file):
         headers = {
-            "Content-Type": "application/json",
             "Authorization": f"Bearer {self.api_key}"
         }
 
@@ -80,7 +79,6 @@ class Document:
 
         try:
             with open(file, "rb") as f:
-                import pdb; pdb.set_trace()
                 response = requests.post(url,files={"file" : f},headers=headers)
             if response.status_code != 200:
                 error_message = f"API Response was: {response.status_code} {response} {url_documentation}"
@@ -98,10 +96,10 @@ class Document:
             "Authorization": f"Bearer {self.api_key}"
         }
 
-        url = f"{url_server}/v1/document/training/"+documentId
+        url = f"{url_server}/v1/document/training/{documentId}"
 
         try:
-            response = requests.get(url, headers=headers)
+            response = requests.post(url, headers=headers)
             if response.status_code != 200:
                 error_message = f"API Response was: {response.status_code} {response.reason} {url_documentation}"
                 raise Exception(error_message)
@@ -115,16 +113,14 @@ class Document:
 
     def loadAndTraining(self,file):
         headers = {
-            "Content-Type": "application/json",
             "Authorization": f"Bearer {self.api_key}"
         }
 
         url = f"{url_server}/v1/document/load-and-training"
 
         try:
-            with open('file', "rb") as f:
-                response = requests.post(url,files={"file" : f},headers=headers)
-                import pdb; pdb.set_trace()
+            with open(file, "rb") as f:
+                response = requests.post(url, files={"file" : f},headers=headers)
 
             if response.status_code != 200:
                 error_message = f"API Response was: {response.status_code} {response} {url_documentation}"
