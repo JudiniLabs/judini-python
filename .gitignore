@@ -11,3 +11,4 @@ build
 .ipynb_checkpoints
 .vscode/launch.json
 .env
+.venv
