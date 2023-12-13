@@ -42,9 +42,9 @@ Below is a sample code demonstrating how to use the Judini package in your Pytho
 ### Import Judini SDK
 ```python
 import os
-from src.judini.codegpt.codegpt import CodeGPT
-from src.judini.codegpt.agent import Agent
-from src.judini.codegpt.chat import Completion
+from judini.codegpt.codegpt import CodeGPT
+from judini.codegpt.agent import Agent
+from judini.codegpt.chat import Completion
 import dotenv
 
 # Load environment variables
