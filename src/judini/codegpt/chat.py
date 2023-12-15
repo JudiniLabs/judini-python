@@ -1,112 +1,358 @@
+
+# Judini Python Package 0.0.21
+The Judini Python library provides convenient access to the CodeGPT by Judini REST API from any Python 3.7+ application. The library includes type definitions for all request params and response fields, and offers both synchronous and asynchronous clients.
+
+  
+
+## Documentation
+The API documentation can be found [Here](https://developers.codegpt.co).
+
+  
+## Install
+To install the package, simply run the following command:
+
+  
+
+```bash
+
+pip  install  judini
+
+```
+
+  
+## How get API Key and AGENT ID
+
+1- **CODEGPT API KEY**
+
+You must go to https://plus.codegpt.co then go to configuration and go to **Configuration> Access Tokens**
+
+And copy **CODEGPT API KEY**
+
+2 - **CODE AGENT ID**
+
+**Agent configuration > Advanced configuration > Agent ID**
+
+And copy **AGENT ID**
+
+  
+## Usage
+Below is a sample code demonstrating how to use the Judini package in your Python application:
+
+  
+### Import Judini SDK
+```python
 import os
-import json
-import aiohttp
-import asyncio
-import requests
+from judini.codegpt.codegpt import CodeGPT
+from judini.codegpt.agent import Agent
+from judini.codegpt.chat import Completion
+import dotenv
+
+# Load environment variables
+dotenv.load_dotenv()
+
+# Retrieve the CodeGPT API key from environment variables
+CODEGPT_API_KEY = os.getenv("CODEGPT_API_KEY")
+
+```
+### My data
+````python  
+def getMyData():
+    """
+    Retrieves personal data associated with the current CodeGPT instance.
+    Returns: 
+        A response object containing the user's data.
+    """
+    codegpt  =  CodeGPT(CODEGPT_API_KEY)
+    return  codegpt.me()
+
+# Example
+my_data = getMyData()
+print(my_data)
+````
+
+### All Agent
+````python  
+def getAllAgent():
+    """
+    Retrieves a list of all available agents from the CodeGPT service.
+    Returns:
+        A list of agents.
+    """
+    agent = Agent(CODEGPT_API_KEY)
+    return agent.getAll()
+
+# Example
+my_agents = getAllAgent()
+print(my_agents)
+````
+
+### Get Agent by ID
+````python  
+def getAgentById(agent_id):
+    """
+    Retrieves details of a specific agent by its ID.
+    Parameters:
+        agent_id (str): The ID of the agent to retrieve.
+    Returns:
+        Details of the specified agent.
+    """
+    agent  =  Agent(CODEGPT_API_KEY)
+    return  agent.getAgentById(agent_id)
+
+# Example
+AGENT_ID = os.getenv("CODEGPT_AGENT_ID")
+my_agent = getAgentById(AGENT_ID)
+print(my_agent)
+````
+
+### Update Agent Info
+````python
+def updateAgent(agent_id, data):
+    """
+    Updates the information of a specific agent.
+    Parameters:
+        agent_id (str): The ID of the agent to update.
+        data (dict): The data to update the agent with.
+    Returns:
+        The updated agent information.
+    """
+    agent  =  Agent(CODEGPT_API_KEY)
+    return  agent.update(agent_id, data)
+
+# Example
+AGENT_ID  =  os.getenv("CODEGPT_AGENT_ID")
+new_data  = {
+    'status': 'published',
+    'name': 'DevSuper2',
+    'documentId': [],
+    'description': 'Dev Super 2',
+    'prompt': 'Eres un Experto programador multilenguaje senior y debes ayudar con el codigo y preguntas que te pidan.',
+    'topk': 100,
+    'temperature': 0.0,
+    'model': 'gpt-3.5-turbo',
+    'welcome': '',
+    'maxTokens': None,
+}
+update = updateAgent(AGENT_ID, new_data)
+print (update)
+````
+
+### Link Document to Agent
+````python
+def linkDocument(agent_id, documentId):
+    """
+    Links a document to a specific agent.
+    Parameters:
+        agent_id (str): The ID of the agent to link the document to.
+        documentId (str): The ID of the document to link.
+    Returns:
+        Response object indicating the result of the operation.
+    """
+    agent  =  Agent(CODEGPT_API_KEY)
+    return  agent.linkDocument(agent_id, documentId)
+
+# Example
+AGENT_ID = os.getenv("CODEGPT_AGENT_ID")
+documentId = '123456' #remplace with you documentId
+link_document = linkDocument(AGENT_ID, documentId)
+print(link_document)
+````
+
+### Unlink Document to Agent
+````python
+def unlinkDocument(agent_id, documentId):
+    """
+    Unlinks a document from a specific agent.
+    Parameters:
+        agent_id (str): The ID of the agent to unlink the document from.
+        documentId (str): The ID of the document to unlink.
+    Returns:
+        Response object indicating the result of the operation.
+    """
+    agent = Agent(CODEGPT_API_KEY)
+    return agent.unlinkDocument(agent_id, documentId)
+
+# Example
+AGENT_ID = os.getenv("CODEGPT_AGENT_ID")
+documentId = '123456' #remplace with you documentId
+unlink_document = unlinkDocument(AGENT_ID, documentId)
+print(unlink_document)
+````  
+
+### Chat Completion
+````python
+def chat_completion(agent_id, prompt):
+    """
+    Generates a chat completion using a specific agent.
+    Parameters:
+        agent_id (str): The ID of the agent to use for the chat.
+    prompt (dict): The chat prompt.
+    Returns:
+        The chat completion result.
+    """
+    completion  =  Completion(CODEGPT_API_KEY)
+    return  completion.create(agent_id, prompt)
+    
+# Example
+AGENT_ID = os.getenv("CODEGPT_AGENT_ID")
+prompt = {"role": "user", "content": "What is the meaning of life?"}
+chat = chat_completion(AGENT_ID, prompt)
+print(chat)
+````
+
+### Chat Completion with Stream
+````python
+def chat_completion_stream(agent_id, prompt):
+    """
+    Generates a streaming chat completion using a specific agent.
+    Parameters:
+        agent_id (str): The ID of the agent to use for the chat.
+        prompt (dict): The chat prompt.
+    Returns:
+        A stream of chat completion results.
+    """
+    completion = Completion(CODEGPT_API_KEY)
+    return completion.create(agent_id, prompt, stream=True)
+
+#example
+AGENT_ID = os.getenv("CODEGPT_AGENT_ID")
+prompt = {"role": "user", "content": "What is the meaning of life?"}
+stream = chat_completion_stream(AGENT_ID,prompt)
+
+for chunk in stream:
+    if chunk is not None:
+        print("data:" + chunk)
+        
+````
+
+### Chat Completion with response as Open AI
+````python
+def chat_completion_openai(agent_id, prompt):
+    """
+    Generates a streaming chat completion using a specific agent.
+    Parameters:
+        agent_id (str): The ID of the agent to use for the chat.
+        prompt (dict): The chat prompt.
+    Returns:
+        A stream of chat completion results.
+    """
+    completion = Completion(CODEGPT_API_KEY)
+    return completion.create(agent_id, prompt, as_openai_response = True)
+
+#example
+AGENT_ID = os.getenv("CODEGPT_AGENT_ID")
+prompt = {"role": "user", "content": "What is the meaning of life?"}
+chat = chat_completion_openai(AGENT_ID, prompt)
+print(chat)
+
+````
+
+### Get All Document
+````python
+def getAllDocument():
+    """
+    Retrieves info of all document files. 
+    Returns: 
+        A response object containing the document's data.
+    """
+    document = Document(CODEGPT_API_KEY)
+    return document.getAll()
+
+#example
+my_documents = getAllDocument()
+print(my_documents)
+````  
+### Get by ID Document
+````python
+def getDocumentById(documentId):
+    """
+    Retrieves info associated with the documentId. 
+    Returns: 
+        A response object containing the document's data.
+    """
+    document = Document(CODEGPT_API_KEY)
+    return document.getDocumentById(documentId)
+
+#example
+documentId = 'YOUR-ID-DOCUMENT'
+my_document = getDocumentById()
+print(my_document)
+````  
 
 
-url_server = "https://api.codegpt.co"
-url_documentation = "https://developers.codegpt.co"
+### Delete Document
+````python
+def deleteDocument(documentId):
+    """
+    Delete document associated with the documentId. 
+    Returns: 
+        A response object containing the document's data.
+    """
+    document = Document(CODEGPT_API_KEY)
+    return document.delete(documentId)
 
-class Completion:
-    def __init__(self, api_key):
-        self.api_key = api_key
+#example
+documentId = 'YOUR-ID-DOCUMENT'
+my_document = delete(documentId)
+print(my_document)
+````  
 
+### Load Document
+````python
+def loadDocument():
+    """
+    Load document file.
+    Returns: 
+        A response object containing the document's data.
+    """
+    document = Document(CODEGPT_API_KEY)
+    return document.load()
 
-    def create(self, agent_id, prompt, stream=False):
-            # Define los valores de headers, messages y la nueva URL
-            headers = {
-                "Content-Type": "application/json",
-                "media_type": "text/event-stream",
-                "Authorization": f"Bearer {self.api_key}"
-                
-            }
+#example
+file = "example.txt" # path of your file
+my_documents = loadDocument(file)
+print(my_documents)
+````  
+### Training Document
+````python
+def trainingDocument(documentId):
+    """
+    Training document file.
+    Returns: 
+        A response object containing the document's data.
+    """
+    document = Document(CODEGPT_API_KEY)
+    return document.training(documentId)
 
-            try:
-                prompt[0]
-            except:
-                prompt = [prompt]
+#example
+documentId = 'YOUR-ID-DOCUMENT'
+document_to_training = trainingDocument(documentId)
+print(document_to_training)
+````  
 
-            messages = {
-                "agent": agent_id,
-                "messages": prompt,
-                "stream": stream,
-            }
+### Load and Training Document
+````python
+def loadToTrainingDocument(file):
+    """
+    Load and Training document file.
+    Returns: 
+        A response object containing the document's data.
+    """
+    document = Document(CODEGPT_API_KEY)
+    return document.loadAndTraining(file)
 
-            url = f"{url_server}/v1/completion"
-            if stream is False:
-                try:
-                    response = requests.post(url, json=messages, headers=headers)
-                    if response.status_code != 200:
-                        error_message = f"API Response was: {response.status} {response.reason} {url_documentation}"
-                        raise Exception(error_message)
-                    
+#example
+file = "example.txt" # path of your file
+document = loadToTrainingDocument(file)
+print(document)
+````  
 
-                    return response.json().split('data: ')[1]
-                
-                except Exception as e:
-                    print(f"An error occurred: {e}")
-            else:
-                try:
-                    response = requests.post(url, json=messages, headers=headers)
-                    if response.status_code != 200:
-                        error_message = f"API Response was: {response.status} {response.reason} {url_documentation}"
-                        raise Exception(error_message)
+## MORE EXAMPLES
+You can view examples in our [Cookbook Repository](https://github.com/judinilabs/cookbook/)
 
-                    return response.text.split('data: ')
-                
-                except Exception as e:
-                    print(f"An error occurred: {e}")
+## Changelog
+[Changelog](https://github.com/JudiniLabs/judini-python/blob/main/CHANGELOG.md)
 
-
-
-
-
-
-# #######
-# def chat_completion(self, prompt, stream=False):
-#         # Define los valores de headers, messages y la nueva URL
-#         headers = {
-#             "Content-Type": "application/json",
-#             "media_type": "text/event-stream",
-#             "Authorization": f"Bearer {self.api_key}"
-#         }
-
-#         try:
-#             prompt[0]
-#         except:
-#             prompt = [prompt]
-
-#         messages = {
-#             "agent": self.agent_id,
-#             "messages": prompt
-#         }
-
-#         url = f"{url_server}/v1/completion"
-
-#         full_response = ""
-#         try:
-#             async with aiohttp.ClientSession() as session:
-#                 async with session.post(url, json=messages, headers=headers) as response:
-#                     if response.status != 200:
-#                         error_message = f"API Response was: {response.status} {response.reason} {url_documentation}"
-#                         raise Exception(error_message)
-
-#                     import pdb; pdb.set_trace()
-#                     async for line in response.content.iter_any():
-#                         text = line.decode(
-#                             'utf-8').replace("data:", '').strip()
-#                         if text == "[DONE]":
-#                             self.is_streaming = False
-#                             break
-#                         if stream:
-#                             yield text + '\n'
-#                         else:
-#                             full_response += text
-
-#                     if not stream:
-#                         yield full_response  # Enviar la respuesta completa
-
-#         except Exception as e:
-#             print(f"An error occurred: {e}")
-#             self.is_streaming = False
+## Contributors
+[@davila7](https://github.com/davila7)
+[@kevinzeladacl](https://github.com/kevinzeladacl)
