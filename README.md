@@ -1,4 +1,5 @@
-# Judini Python Package 0.0.22
+
+# Judini Python Package 0.0.23
 The Judini Python library provides convenient access to the CodeGPT by Judini REST API from any Python 3.7+ application. The library includes type definitions for all request params and response fields, and offers both synchronous and asynchronous clients.
 
   
@@ -61,8 +62,8 @@ def getMyData():
     Returns: 
         A response object containing the user's data.
     """
-    codegpt = CodeGPT(CODEGPT_API_KEY)
-    return codegpt.me()
+    codegpt  =  CodeGPT(CODEGPT_API_KEY)
+    return  codegpt.me()
 
 # Example
 my_data = getMyData()
@@ -95,8 +96,8 @@ def getAgentById(agent_id):
     Returns:
         Details of the specified agent.
     """
-    agent = Agent(CODEGPT_API_KEY)
-    return agent.getAgentById(agent_id)
+    agent  =  Agent(CODEGPT_API_KEY)
+    return  agent.getAgentById(agent_id)
 
 # Example
 AGENT_ID = os.getenv("CODEGPT_AGENT_ID")
@@ -115,17 +116,17 @@ def updateAgent(agent_id, data):
     Returns:
         The updated agent information.
     """
-    agent = Agent(CODEGPT_API_KEY)
-    return agent.update(agent_id, data)
+    agent  =  Agent(CODEGPT_API_KEY)
+    return  agent.update(agent_id, data)
 
 # Example
-AGENT_ID = os.getenv("CODEGPT_AGENT_ID")
-new_data = {
+AGENT_ID  =  os.getenv("CODEGPT_AGENT_ID")
+new_data  = {
     'status': 'published',
-    'name': 'My Super Agent',
+    'name': 'DevSuper2',
     'documentId': [],
-    'description': 'This is a super Agent',
-    'prompt': 'Example of Prompt.',
+    'description': 'Dev Super 2',
+    'prompt': 'Eres un Experto programador multilenguaje senior y debes ayudar con el codigo y preguntas que te pidan.',
     'topk': 100,
     'temperature': 0.0,
     'model': 'gpt-3.5-turbo',
@@ -147,12 +148,12 @@ def linkDocument(agent_id, documentId):
     Returns:
         Response object indicating the result of the operation.
     """
-    agent = Agent(CODEGPT_API_KEY)
-    return agent.linkDocument(agent_id, documentId)
+    agent  =  Agent(CODEGPT_API_KEY)
+    return  agent.linkDocument(agent_id, documentId)
 
 # Example
 AGENT_ID = os.getenv("CODEGPT_AGENT_ID")
-documentId = 'YOUR-ID-DOCUMENT'
+documentId = '123456' #remplace with you documentId
 link_document = linkDocument(AGENT_ID, documentId)
 print(link_document)
 ````
@@ -173,7 +174,7 @@ def unlinkDocument(agent_id, documentId):
 
 # Example
 AGENT_ID = os.getenv("CODEGPT_AGENT_ID")
-documentId = 'YOUR-ID-DOCUMENT'
+documentId = '123456' #remplace with you documentId
 unlink_document = unlinkDocument(AGENT_ID, documentId)
 print(unlink_document)
 ````  
@@ -189,8 +190,8 @@ def chat_completion(agent_id, prompt):
     Returns:
         The chat completion result.
     """
-    completion = Completion(CODEGPT_API_KEY)
-    return completion.create(agent_id, prompt)
+    completion  =  Completion(CODEGPT_API_KEY)
+    return  completion.create(agent_id, prompt)
     
 # Example
 AGENT_ID = os.getenv("CODEGPT_AGENT_ID")
@@ -211,7 +212,7 @@ def chat_completion_stream(agent_id, prompt):
         A stream of chat completion results.
     """
     completion = Completion(CODEGPT_API_KEY)
-    return completion.create(agent_id, prompt, stream=True) # stream must be "True"
+    return completion.create(agent_id, prompt, stream=True)
 
 #example
 AGENT_ID = os.getenv("CODEGPT_AGENT_ID")
@@ -222,6 +223,28 @@ for chunk in stream:
     if chunk is not None:
         print("data:" + chunk)
         
+````
+
+### Chat Completion with response as Open AI
+````python
+def chat_completion_openai(agent_id, prompt):
+    """
+    Generates a streaming chat completion using a specific agent.
+    Parameters:
+        agent_id (str): The ID of the agent to use for the chat.
+        prompt (dict): The chat prompt.
+    Returns:
+        A stream of chat completion results.
+    """
+    completion = Completion(CODEGPT_API_KEY)
+    return completion.create(agent_id, prompt, as_openai_response = True)
+
+#example
+AGENT_ID = os.getenv("CODEGPT_AGENT_ID")
+prompt = {"role": "user", "content": "What is the meaning of life?"}
+chat = chat_completion_openai(AGENT_ID, prompt)
+print(chat)
+
 ````
 
 ### Get All Document
