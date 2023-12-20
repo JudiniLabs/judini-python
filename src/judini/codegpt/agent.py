@@ -75,8 +75,9 @@ class Agent:
         url = f"{url_server}/v1/agent/{agent_id}"
         try:
             old_documentId = self.getAgentById(agent_id)["documentId"]
+            old_documentId.append(documentId)
             data = {
-                "documentId":old_documentId.append(documentId)
+                "documentId":old_documentId
             }
 
             response = requests.patch(url, json=data, headers=headers)

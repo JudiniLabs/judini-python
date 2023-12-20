@@ -56,7 +56,7 @@ class Document:
         url = f"{url_server}/v1/document/"+documentId
 
         try:
-            response = requests.get(url, headers=headers)
+            response = requests.delete(url, headers=headers)
             if response.status_code != 200:
                 error_message = f"API Response was: {response.status_code} {response.reason} {url_documentation}"
                 raise Exception(error_message)
