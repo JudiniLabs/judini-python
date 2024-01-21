@@ -1,6 +1,6 @@
 import requests
 
-base_url = "https://api-beta.codegpt.co/api/v1/"
+base_url = "https://api-beta.codegpt.co/api/v1"
 
 class Document:
     def __init__(self, api_key):
@@ -32,7 +32,7 @@ class Document:
             "Authorization": f"Bearer {self.api_key}"
         }
 
-        url = f"{url_server}/v1/document/"+documentId
+        url = f"{base_url}/document/"+documentId
 
         try:
             response = requests.get(url, headers=headers)
@@ -51,7 +51,7 @@ class Document:
             "Authorization": f"Bearer {self.api_key}"
         }
 
-        url = f"{url_server}/v1/document/"+documentId
+        url = f"{base_url}/document/"+documentId
 
         try:
             response = requests.delete(url, headers=headers)
@@ -69,7 +69,7 @@ class Document:
             "Authorization": f"Bearer {self.api_key}"
         }
 
-        url = f"{url_server}/v1/document/load"
+        url = f"{base_url}/document/load"
 
         try:
             with open(file, "rb") as f:
@@ -90,7 +90,7 @@ class Document:
             "Authorization": f"Bearer {self.api_key}"
         }
 
-        url = f"{url_server}/v1/document/training/{documentId}"
+        url = f"{base_url}/document/training/{documentId}"
 
         try:
             response = requests.post(url, headers=headers)
@@ -110,7 +110,7 @@ class Document:
             "Authorization": f"Bearer {self.api_key}"
         }
 
-        url = f"{url_server}/v1/document/load-and-training"
+        url = f"{base_url}/document/load-and-training"
 
         try:
             with open(file, "rb") as f:
