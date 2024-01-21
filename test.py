@@ -1,5 +1,5 @@
 import os
-from src.judini.codegpt.codegpt import CodeGPT
+from judini.codegpt.user import CodeGPT
 from src.judini.codegpt.agent import Agent
 from src.judini.codegpt.chat import Completion
 from src.judini.codegpt.document import Document
