@@ -1,5 +1,5 @@
 
-# Judini Python Package 0.0.24
+# Judini Python Package 0.1.0
 The Judini Python library provides convenient access to the CodeGPT by Judini REST API from any Python 3.7+ application. The library includes type definitions for all request params and response fields, and offers both synchronous and asynchronous clients.
 
   
@@ -355,4 +355,3 @@ You can view examples in our [Cookbook Repository](https://github.com/judinilabs
 
 ## Contributors
 [@davila7](https://github.com/davila7)
-[@kevinzeladacl](https://github.com/kevinzeladacl)

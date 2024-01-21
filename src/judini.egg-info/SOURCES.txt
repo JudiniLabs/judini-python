@@ -10,3 +10,6 @@ src/judini.egg-info/requires.txt
 src/judini.egg-info/top_level.txt
 src/judini/codegpt/__init__.py
 src/judini/codegpt/agent.py
+src/judini/codegpt/chat.py
+src/judini/codegpt/document.py
+src/judini/codegpt/user.py
