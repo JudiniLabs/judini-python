@@ -1,15 +1,13 @@
 import requests
 
-
-url_server = "https://api.codegpt.co"
-url_documentation = "https://developers.codegpt.co"
+base_url = "https://api-beta.codegpt.co/api/v1/"
 
 class Completion:
     def __init__(self, api_key):
         self.api_key = api_key
 
 
-    def create(self, agent_id, prompt, stream=False, as_openai_response = False):
+    def create(self, agent_id, messages, stream=False):
             # Define los valores de headers, messages y la neueva URL
             headers = {
                 "Content-Type": "application/json",
@@ -17,26 +15,19 @@ class Completion:
                 "Authorization": f"Bearer {self.api_key}"
             }
 
-            try:
-                prompt[0]
-            except:
-                prompt = [prompt]
-
-            messages = {
+            json = {
                 "agent": agent_id,
-                "messages": prompt,
+                "messages": messages,
                 "stream": stream,
             }
-            if as_openai_response is False:
-                url = f"{url_server}/v1/completion"
-            else:
-                url = f"{url_server}/v1/chat/completions"
+           
+            url = f"{base_url}/chat/completions"
 
             if stream is False:
                 try:
-                    response = requests.post(url, json=messages, headers=headers)
+                    response = requests.post(url, json=json, headers=headers)
                     if response.status_code != 200:
-                        error_message = f"API Response was: {response.status_code} {response.reason} {url_documentation}"
+                        error_message = f"API Response was: {response.status_code} {response.reason}"
                         raise Exception(error_message)
                     
 
@@ -46,9 +37,9 @@ class Completion:
                     print(f"An error occurred: {e}")
             else:
                 try:
-                    response = requests.post(url, json=messages, headers=headers)
+                    response = requests.post(url, json=json, headers=headers)
                     if response.status_code != 200:
-                        error_message = f"API Response was: {response.status_code} {response.reason} {url_documentation}"
+                        error_message = f"API Response was: {response.status_code} {response.reason}"
                         raise Exception(error_message)
 
                     return response.text.split('data: ')

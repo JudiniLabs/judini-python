@@ -1,9 +1,6 @@
 import requests
 
-
-url_server = "https://api.codegpt.co"
-url_documentation = "https://developers.codegpt.co"
-
+base_url = "https://api-beta.codegpt.co/api/v1/"
 
 class Agent:
     def __init__(self, api_key):
@@ -16,12 +13,12 @@ class Agent:
             "Authorization": f"Bearer {self.api_key}"
         }
 
-        url = f"{url_server}/v1/agent"
+        url = f"{base_url}/agent"
 
         try:
             response = requests.get(url, headers=headers)
             if response.status_code != 200:
-                error_message = f"API Response was: {response.status_code} {response.reason} {url_documentation}"
+                error_message = f"API Response: {response.status_code} {response.reason}"
                 raise Exception(error_message)
             else:
                 return response.json()
@@ -35,12 +32,12 @@ class Agent:
             "Authorization": f"Bearer {self.api_key}"
         }
 
-        url = f"{url_server}/v1/agent/{agent_id}" if agent_id else f"{url_server}/v1/agent"
+        url = f"{base_url}/agent/{agent_id}"
 
         try:
             response = requests.get(url, headers=headers)
             if response.status_code != 200:
-                error_message = f"API Response was: {response.status_code} {response.reason} {url_documentation}"
+                error_message = f"API CODEGPT Response: {response.status_code} {response.reason}"
                 raise Exception(error_message)
             else:
                 return response.json()
@@ -53,70 +50,14 @@ class Agent:
             "Content-Type": "application/json",
             "Authorization": f"Bearer {self.api_key}"
         }
-        url = f"{url_server}/v1/agent/{agent_id}"
+        url = f"{base_url}/agent/{agent_id}"
         try:
             response = requests.patch(url, json=data, headers=headers)
             if response.status_code != 200:
-                error_message = f"API Response was: {response.status_code} {response.reason} {url_documentation}"
+                error_message = f"API Response was: {response.status_code} {response.reason}"
                 raise Exception(error_message)
             else:
                 return response.json()
 
         except Exception as e:
-            print(f"An error occurred: {e}")
-
-
-
-    def linkDocument(self,agent_id, documentId):
-        headers = {
-            "Content-Type": "application/json",
-            "Authorization": f"Bearer {self.api_key}"
-        }
-        url = f"{url_server}/v1/agent/{agent_id}"
-        try:
-            old_documentId = self.getAgentById(agent_id)["documentId"]
-            old_documentId.append(documentId)
-            data = {
-                "documentId":old_documentId
-            }
-
-            response = requests.patch(url, json=data, headers=headers)
-            if response.status_code != 200: 
-                error_message = f"API Response: Error {response.status_code} {response.json()['detail']} {url_documentation}"
-                raise Exception(error_message)
-            else:
-                return response.json()
-
-        except Exception as e:
-            print(f"An error occurred: {e}")
-
-    
-    def unlinkDocument(self,agent_id, documentId):
-        headers = {
-            "Content-Type": "application/json",
-            "Authorization": f"Bearer {self.api_key}"
-        }
-        url = f"{url_server}/v1/agent/{agent_id}"
-        try:
-            old_documentId = self.getAgentById(agent_id)["documentId"]
-            old_documentId.remove(documentId) 
-
-            if old_documentId is None:
-                old_documentId = []
-            
-            data = {
-                "documentId":old_documentId
-            }
-            response = requests.patch(url, json=data, headers=headers)
-            if response.status_code != 200: 
-                error_message = f"API Response was: {response.status_code} {response.reason} {url_documentation}"
-                raise Exception(error_message)
-            else:
-                return response.json()
-
-        except Exception as e:
-            print(f"An error occurred: {e}")
-
-
-
-    
+            print(f"An error occurred: {e}")    

@@ -1,8 +1,6 @@
 import requests
 
-
-url_server = "https://api.codegpt.co"
-url_documentation = "https://developers.codegpt.co"
+base_url = "https://api-beta.codegpt.co/api/v1/"
 
 class Document:
     def __init__(self, api_key):
@@ -15,7 +13,7 @@ class Document:
             "Authorization": f"Bearer {self.api_key}"
         }
 
-        url = f"{url_server}/v1/document"
+        url = f"{base_url}/document"
 
         try:
             response = requests.get(url, headers=headers)
