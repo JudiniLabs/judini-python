@@ -39,4 +39,4 @@ jobs:
       # retrieve your distributions here
 
       - name: Publish package distributions to PyPI
-        uses: JudiniLabs/judini-python
+        uses: pypa/gh-action-pypi-publish@release/v1
