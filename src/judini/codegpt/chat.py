@@ -1,6 +1,6 @@
 import requests
 
-base_url = "https://api-beta.codegpt.co/api/v1/"
+base_url = "https://api-beta.codegpt.co/api/v1"
 
 class Completion:
     def __init__(self, api_key):
@@ -27,7 +27,7 @@ class Completion:
                 try:
                     response = requests.post(url, json=json, headers=headers)
                     if response.status_code != 200:
-                        error_message = f"API Response was: {response.status_code} {response.reason}"
+                        error_message = f"API Response was: url={url}, {response.status_code} {response.reason}"
                         raise Exception(error_message)
                     
 
@@ -39,7 +39,7 @@ class Completion:
                 try:
                     response = requests.post(url, json=json, headers=headers)
                     if response.status_code != 200:
-                        error_message = f"API Response was: {response.status_code} {response.reason}"
+                        error_message = f"API Response was: url={url}, {response.status_code} {response.reason}"
                         raise Exception(error_message)
 
                     return response.text.split('data: ')

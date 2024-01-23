@@ -1,5 +1,5 @@
 
-# Judini Python Package 0.1.1
+# Judini Python Package 0.1.2
 The Judini Python library provides convenient access to CodeGPT's Judini REST API from any Python 3.7+ application. The library includes type definitions for all request parameters and response fields, and offers synchronous and asynchronous clients.
 
 ## Documentation
@@ -39,7 +39,7 @@ AGENT_ID = os.getenv("CODEGPT_AGENT_ID")
 
 ### Chat Completion
 ```python
-def chat_completion(agent_id, prompt):
+def chat_completion(agent_id, messages):
     """
     Chat completion by Agent ID
     Parameters:
@@ -49,7 +49,7 @@ def chat_completion(agent_id, prompt):
         Chat completion result
     """
     completion  =  Completion(CODEGPT_API_KEY)
-    return  completion.create(agent_id, prompt)
+    return  completion.create(agent_id, messages)
     
 # Example
 messages = {"role": "user", "content": "What is the meaning of life?"}
