@@ -1,4 +1,6 @@
 import requests
+import http
+import json
 
 base_url = "https://api-beta.codegpt.co/api/v1"
 
@@ -8,41 +10,46 @@ class Completion:
 
 
     def create(self, agent_id, messages, stream=False):
-            # Define los valores de headers, messages y la neueva URL
             headers = {
                 "Content-Type": "application/json",
                 "media_type": "text/event-stream",
                 "Authorization": f"Bearer {self.api_key}"
             }
 
-            json = {
-                "agent": agent_id,
-                "messages": messages,
-                "stream": stream,
-            }
-           
-            url = f"{base_url}/chat/completions"
+            payload = json.dumps({
+                "agentId": agent_id,
+                "messages": messages
+            })
 
+            conn = http.client.HTTPSConnection("api-beta.codegpt.co")
+            url = "/api/v1/chat/completions"
+
+            conn.request("POST", url, body=payload, headers=headers)
+            res = conn.getresponse()
+            try:
+                data = res.read()
+            except Exception as e:
+                print(f"An error occurred: {e.__class__.__name__}")
+                print(f"Error details: {str(e)}")
+
+            content_data = ""
             if stream is False:
-                try:
-                    response = requests.post(url, json=json, headers=headers)
-                    if response.status_code != 200:
-                        error_message = f"API Response was: url={url}, {response.status_code} {response.reason}"
-                        raise Exception(error_message)
-                    
+                data.decode("utf-8").replace('\n','').split('data: ')[1:]
+                for jd_str in data:
+                    if jd_str:
+                        try:
+                            # data: {}
+                            json_data = json.loads(jd_str)
+                            for item in json_data['choices']:
+                                content_data += item['delta']['content']
+                        except:
+                            # data: [DONE]
+                            pass
 
-                    return response.json().split('data: ')[1]
-                
-                except Exception as e:
-                    print(f"An error occurred: {e}")
+                return content_data
             else:
                 try:
-                    response = requests.post(url, json=json, headers=headers)
-                    if response.status_code != 200:
-                        error_message = f"API Response was: url={url}, {response.status_code} {response.reason}"
-                        raise Exception(error_message)
-
-                    return response.text.split('data: ')
-                
+                    return data.decode("utf-8").replace('\n','').split('data: ')[1:]
                 except Exception as e:
-                    print(f"An error occurred: {e}")
+                    print(f"An error occurred: {e.__class__.__name__}")
+                    print(f"Error details: {str(e)}")
