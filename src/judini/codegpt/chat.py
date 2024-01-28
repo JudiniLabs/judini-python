@@ -34,8 +34,8 @@ class Completion:
 
             content_data = ""
             if stream is False:
-                data.decode("utf-8").replace('\n','').split('data: ')[1:]
-                for jd_str in data:
+                data_array = data.decode("utf-8").replace('\n','').split('data: ')[1:]
+                for jd_str in data_array:
                     if jd_str:
                         try:
                             # data: {}

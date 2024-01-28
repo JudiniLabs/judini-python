@@ -1,5 +1,5 @@
 
-# Judini Python Package 0.1.7
+# Judini Python Package 0.1.8
 The Judini Python library provides convenient access to CodeGPT's Judini REST API from any Python 3.7+ application. The library includes type definitions for all requests parameters and response fields, and offers synchronous and asynchronous clients.
 
 ## Documentation
