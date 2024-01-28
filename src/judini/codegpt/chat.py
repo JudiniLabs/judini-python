@@ -20,35 +20,35 @@ class Completion:
                 "messages": messages
             })
 
-            conn = http.client.HTTPSConnection("api-beta.codegpt.co")
-            url = "/api/v1/chat/completions"
+            # conn = http.client.HTTPSConnection("api-beta.codegpt.co")
+            # url = "/api/v1/chat/completions"
 
-            conn.request("POST", url, body=payload, headers=headers)
-            res = conn.getresponse()
-            try:
-                data = res.read()
-            except Exception as e:
-                print(f"An error occurred: {e.__class__.__name__}")
-                print(f"Error details: {str(e)}")
+            # conn.request("POST", url, body=payload, headers=headers)
+            # res = conn.getresponse()
+            # try:
+            #     data = res.read()
+            # except Exception as e:
+            #     print(f"An error occurred: {e.__class__.__name__}")
+            #     print(f"Error details: {str(e)}")
 
-            content_data = ""
-            if stream is False:
-                data.decode("utf-8").replace('\n','').split('data: ')[1:]
-                for jd_str in data:
-                    if jd_str:
-                        try:
-                            # data: {}
-                            json_data = json.loads(jd_str)
-                            for item in json_data['choices']:
-                                content_data += item['delta']['content']
-                        except:
-                            # data: [DONE]
-                            pass
+            # content_data = ""
+            # if stream is False:
+            #     data.decode("utf-8").replace('\n','').split('data: ')[1:]
+            #     for jd_str in data:
+            #         if jd_str:
+            #             try:
+            #                 # data: {}
+            #                 json_data = json.loads(jd_str)
+            #                 for item in json_data['choices']:
+            #                     content_data += item['delta']['content']
+            #             except:
+            #                 # data: [DONE]
+            #                 pass
 
-                return content_data
-            else:
-                try:
-                    return data.decode("utf-8").replace('\n','').split('data: ')[1:]
-                except Exception as e:
-                    print(f"An error occurred: {e.__class__.__name__}")
-                    print(f"Error details: {str(e)}")
+            #     return content_data
+            # else:
+            #     try:
+            #         return data.decode("utf-8").replace('\n','').split('data: ')[1:]
+            #     except Exception as e:
+            #         print(f"An error occurred: {e.__class__.__name__}")
+            #         print(f"Error details: {str(e)}")
