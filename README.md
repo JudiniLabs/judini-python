@@ -44,7 +44,7 @@ def chat_completion(agent_id, messages):
     Chat completion by Agent ID
     Parameters:
         agent_id (str): Agent ID
-        messages (dict): Messages { "role": "user", "content": "user prompt" }
+        messages (dict): Messages [{ "role": "user", "content": "user prompt" }]
     Returns:
         Chat completion result
     """
@@ -52,7 +52,7 @@ def chat_completion(agent_id, messages):
     return  completion.create(agent_id, messages)
     
 # Example
-messages = {"role": "user", "content": "What is the meaning of life?"}
+messages = [{"role": "user", "content": "What is the meaning of life?"}]
 chat = chat_completion(AGENT_ID, messages)
 print(chat)
 ```
