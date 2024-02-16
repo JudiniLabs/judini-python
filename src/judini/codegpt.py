@@ -1,5 +1,6 @@
 import os
 import mimetypes
+import warnings
 import json
 import requests
 from typing import List, Dict, Literal, Optional
@@ -7,19 +8,22 @@ from .utils import handle_non_stream, handle_stream
 from .types import Agent, Document, DocumentMetadata
 
 base_url = 'https://api-beta.codegpt.co/api/v1'
-JUDINI_TUTORIAL = 'https://api-beta.codegpt.co/api/v1/docs'
+JUDINI_TUTORIAL = f'{base_url}/docs'
+PLAYGROUND_KEYS_URL = 'https://app.codegpt.co/en/apikeys' 
 
 class CodeGPTPlus:
     def __init__(self,
                  api_key: Optional[str] = None,
-                 org_id: Optional[str] = None):
+                 org_id: Optional[str] = None,
+                 base_url: str = base_url):
 
         if not api_key:
             api_key = os.getenv("CODEGPT_API_KEY")
             if not api_key:
                 raise Exception('JUDINI: API key not found. Please set'
                                 + ' the CODEGPT_API_KEY environment variable'
-                                + ' or pass it as an argument.')
+                                + ' or pass it as an argument.\nYou can get'
+                                + ' your API key from: ' + PLAYGROUND_KEYS_URL)
         self.headers = {
             'Content-Type': 'application/json',
             'Channel' : 'SDK_PYTHON',
@@ -30,8 +34,15 @@ class CodeGPTPlus:
 
         if org_id:
             self.headers['CodeGPT-Org-Id'] = org_id
+        else:
+            warnings.warn('\nJUDINI: Org ID not found. This could lead to'
+                          + ' unexpected behavior.\nYou can get your org ID'
+                          + ' from: ' + PLAYGROUND_KEYS_URL)
         
         self.is_streaming = False
+        self.base_url = base_url
+
+
 
     #######################
     ### CHAT COMPLETION ###
@@ -83,7 +94,7 @@ class CodeGPTPlus:
             "format": "json" # By default always json
         })
 
-        response = requests.post(f"{base_url}/chat/completions",
+        response = requests.post(f"{self.base_url}/chat/completions",
                                  headers=headers, data=payload,
                                  stream=stream)
         if response.status_code != 200:
@@ -118,7 +129,7 @@ class CodeGPTPlus:
             agent_type: str = The type of the agent
         """
 
-        response = requests.get(f"{base_url}/agent", headers=self.headers)
+        response = requests.get(f"{self.base_url}/agent", headers=self.headers)
 
         if response.status_code != 200:
             raise Exception(f'JUDINI: API Response was: {response.status_code}'
@@ -149,7 +160,7 @@ class CodeGPTPlus:
             agent_type: str = The type of the agent
         """
 
-        response = requests.get(f"{base_url}/agent/{agent_id}?populate=agent_documents",
+        response = requests.get(f"{self.base_url}/agent/{agent_id}?populate=agent_documents",
                                  headers=self.headers)
 
         if response.status_code != 200:
@@ -200,7 +211,7 @@ class CodeGPTPlus:
             "topk": topk,
             "temperature": temperature
         })
-        response = requests.post(f"{base_url}/agent", headers=self.headers,
+        response = requests.post(f"{self.base_url}/agent", headers=self.headers,
                                  data=payload)
         
         if response.status_code != 200:
@@ -277,7 +288,7 @@ class CodeGPTPlus:
         
         payload = json.dumps(payload)
 
-        response = requests.patch(f"{base_url}/agent/{agent_id}",
+        response = requests.patch(f"{self.base_url}/agent/{agent_id}",
                                   headers=self.headers,
                                   data=payload)
         
@@ -297,7 +308,7 @@ class CodeGPTPlus:
         agent_id: The ID of the agent to delete.
         """
 
-        response = requests.delete(f"{base_url}/agent/{agent_id}",
+        response = requests.delete(f"{self.base_url}/agent/{agent_id}",
                                    headers=self.headers)
         
         if response.status_code != 200:
@@ -317,7 +328,7 @@ class CodeGPTPlus:
         document_ids: The IDs of the documents to associate with the agent.
         """
         payload = json.dumps({ "agent_documents": document_ids})
-        response = requests.patch(f"{base_url}/agent/{agent_id}/documents",
+        response = requests.patch(f"{self.base_url}/agent/{agent_id}/documents",
                                   headers=self.headers,
                                   data=payload)
         
@@ -348,7 +359,7 @@ class CodeGPTPlus:
             chunks_count: int = The number of chunks the document was split into
         """
 
-        response = requests.get(f"{base_url}/document", headers=self.headers)
+        response = requests.get(f"{self.base_url}/document", headers=self.headers)
 
         if response.status_code != 200:
             raise Exception(f'JUDINI: API Response was: {response.status_code}'
@@ -377,7 +388,7 @@ class CodeGPTPlus:
             chunks_count: int = The number of chunks the document was split into
         """
 
-        response = requests.get(f"{base_url}/document/{document_id}",
+        response = requests.get(f"{self.base_url}/document/{document_id}",
                                 headers=self.headers)
 
         if response.status_code != 200:
@@ -421,7 +432,7 @@ class CodeGPTPlus:
 
         payload = json.dumps(document_metadata.model_dump())
 
-        response = requests.patch(f"{base_url}/document/{document_id}/metadata",
+        response = requests.patch(f"{self.base_url}/document/{document_id}/metadata",
                                   headers=self.headers,
                                   data=payload)
 
@@ -456,7 +467,7 @@ class CodeGPTPlus:
 
         with open(file_path, 'rb') as file:
             file_tuple = (os.path.basename(file_path), file, file_type)
-            response = requests.post(f"{base_url}/document/metadata",
+            response = requests.post(f"{self.base_url}/document/metadata",
                                      headers=headers,
                                      files={'file': file_tuple})
             
@@ -493,7 +504,7 @@ class CodeGPTPlus:
         
         with open(file_path, 'rb') as file:
             file_tuple = (os.path.basename(file_path), file, file_type)
-            response = requests.post(f"{base_url}/document",
+            response = requests.post(f"{self.base_url}/document",
                                      headers=headers,
                                      files={'file': file_tuple})
         
@@ -524,7 +535,7 @@ class CodeGPTPlus:
         document_id: The ID of the document to delete.
         """
 
-        response = requests.delete(f"{base_url}/document/{document_id}",
+        response = requests.delete(f"{self.base_url}/document/{document_id}",
                                    headers=self.headers)
         
         if response.status_code != 200:
