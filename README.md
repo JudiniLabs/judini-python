@@ -20,235 +20,121 @@ pip install judini
 5. Copy and replace your **AGENT KEY**
 
   
-## How to Usage
-### Import Judini SDK
-```python
-import os
-from judini.codegpt.agent import Agent
-from judini.codegpt.chat import Completion
-from judini.codegpt.document import Document
-import dotenv
-
-# Load environment variables
-dotenv.load_dotenv()
-
-# CodeGPT Environment Variables API Key
-CODEGPT_API_KEY = os.getenv("CODEGPT_API_KEY")
-AGENT_ID = os.getenv("CODEGPT_AGENT_ID")
-```
+## How to use
 
 ### Chat Completion
+
 ```python
-def chat_completion(agent_id, messages):
-    """
-    Chat completion by Agent ID
-    Parameters:
-        agent_id (str): Agent ID
-        messages (dict): Messages [{ "role": "user", "content": "user prompt" }]
-    Returns:
-        Chat completion result
-    """
-    completion  =  Completion(CODEGPT_API_KEY)
-    return  completion.create(agent_id, messages)
-    
-# Example
+from judini import CodeGPTPlus
+codegpt = CodeGPTPlus(api_key=CODEGPT_API_KEY)
+
+AGENT_ID = "0000000-0000-0000-0000-000000000000"
 messages = [{"role": "user", "content": "What is the meaning of life?"}]
-chat = chat_completion(AGENT_ID, messages)
+
+# No streaming
+chat = codegpt.chat_completion(agent_id=AGENT_ID,
+                               messages=messages)
 print(chat)
+
+# Streaming
+for chunk in codegpt.chat_completion(agent_id=AGENT_ID,
+                                     messages=messages,
+                                     stream=True):
+    print(chunk, end="")
 ```
 
-### All Agent
+### Agents
+#### List all agents
+```python
+from judini import CodeGPTPlus
+codegpt = CodeGPTPlus(api_key=CODEGPT_API_KEY)
+codegpt.get_agents()
+>> [Agent(id='0000000-0000-0000-0000-000000000000', ...),
+>>  Agent(id='0000000-0000-0000-0000-000000000001', ...)]
+```
+
+#### Get agent by ID
 ```python  
-def getAllAgent():
-    """
-    Retrieves a list of all available agents
-    Returns:
-        A list of agents.
-    """
-    agent = Agent(CODEGPT_API_KEY)
-    return agent.getAll()
-
-# Example
-my_agents = getAllAgent()
-print(my_agents)
+from judini import CodeGPTPlus
+codegpt = CodeGPTPlus(api_key=CODEGPT_API_KEY)
+agent = codegpt.get_agent(agent_id='0000000-0000-0000-0000-000000000000')
+agent
+>> Agent(id='0000000-0000-0000-0000-000000000000',
+>>       name='Agent name', model='gpt-3.5-turbo',
+>>       prompt='You are a helpful assistant.',
+>>       welcome='Hello, how can I help you?',
+>>       ...)
 ```
 
-### Get agent data by ID
-```python  
-def getAgentById(agent_id):
-    """
-    Retrieves details of a specific agent by Agent ID
-    Parameters:
-        agent_id (str): Agent ID
-    Returns:
-        Agent details
-    """
-    agent  =  Agent(CODEGPT_API_KEY)
-    return  agent.getAgentById(agent_id)
-
-# Example
-AGENT_ID = os.getenv("CODEGPT_AGENT_ID")
-my_agent = getAgentById(AGENT_ID)
-print(my_agent)
+#### Create Agent
+```python
+from judini import CodeGPTPlus
+codegpt = CodeGPTPlus(api_key=CODEGPT_API_KEY)
+codegpt.create_agent(name='Agent name', model='gpt-3.5-turbo',
+                     prompt='You are a helpful assistant.',
+                     welcome='Hello, how can I help you?')
+>> Agent(id='0000000-0000-0000-0000-000000000000',
+>>       name='Agent name', model='gpt-3.5-turbo', ...)
 ```
 
-### Update Agent
+#### Update Agent info
 ```python
-def updateAgent(agent_id, data):
-    """
-    Updates information for a specific agent.
-    Parameters:
-        agent_id (str): Agent ID
-        data (dict) : Agent data to update
-    Returns:
-        Updated agent details
-    """
-    agent  =  Agent(CODEGPT_API_KEY)
-    return  agent.update(agent_id, data)
-
-# Example
-AGENT_ID  =  os.getenv("CODEGPT_AGENT_ID")
-new_data  = {
-    'status': 'published',
-    'name': 'DevSuper2',
-    'documentId': [],
-    'description': 'Dev Super 2',
-    'prompt': 'You are an expert senior multilanguage programmer and you must help with the code and questions they ask of you.',
-    'topk': 100,
-    'temperature': 0.0,
-    'model': 'gpt-3.5-turbo',
-    'welcome': '',
-    'maxTokens': None,
-}
-update = updateAgent(AGENT_ID, new_data)
-print (update)
+from judini import CodeGPTPlus
+codegpt = CodeGPTPlus(api_key=CODEGPT_API_KEY)
+codegpt.update_agent(agent_id='0000000-0000-0000-0000-000000000000',
+                     name='Agent name updated',
+                     model='gpt-4-turbo-preview')
+>> Agent(id='0000000-0000-0000-0000-000000000000',
+>>       name='Agent name updated', model='gpt-3.5-turbo', ...)                    
 ```
 
-### Link document to an agent
+### Delete Agent
 ```python
-def linkDocument(agent_id, documentId):
-    """
-    Links a document to a specific agent.
-    Parameters:
-        agent_id (str): Agent ID
-        documentId (str): Document ID to link.
-    Returns:
-        Response object indicating the result of the operation.
-    """
-    agent  =  Agent(CODEGPT_API_KEY)
-    return  agent.linkDocument(agent_id, documentId)
-
-# Example
-AGENT_ID = os.getenv("CODEGPT_AGENT_ID")
-documentId = '123456' # replace with your document id
-link_document = linkDocument(AGENT_ID, documentId)
-print(link_document)
+from judini import CodeGPTPlus
+codegpt = CodeGPTPlus(api_key=CODEGPT_API_KEY)
+codegpt.delete_agent('0000000-0000-0000-0000-000000000000')
+>> Agent deleted successfully
 ```
 
-### Unlink document to an agent
+### Documents
+#### List all documents
 ```python
-def unlinkDocument(agent_id, documentId):
-    """
-    Unlinks a document from a specific agent.
-    Parameters:
-        agent_id (str): Agent ID to unlink the document from.
-        documentId (str): Document ID to unlink.
-    Returns:
-        Response object indicating the result of the operation.
-    """
-    agent = Agent(CODEGPT_API_KEY)
-    return agent.unlinkDocument(agent_id, documentId)
-
-# Example
-AGENT_ID = os.getenv("CODEGPT_AGENT_ID")
-documentId = '123456' # replace with your document id
-unlink_document = unlinkDocument(AGENT_ID, documentId)
-print(unlink_document)
+from judini import CodeGPTPlus
+codegpt = CodeGPTPlus(api_key=CODEGPT_API_KEY)
+codegpt.get_documents()
+>> [Document(id='0000000-0000-0000-0000-000000000000', ...),
+>>  Document(id='0000000-0000-0000-0000-000000000001', ...)]
 ```
 
-### Get All Document
+#### Get document by ID
 ```python
-def getAllDocument():
-    """
-    Get all documents
-    Returns: 
-        An object with all the account documents
-    """
-    document = Document(CODEGPT_API_KEY)
-    return document.getAll()
+from judini import CodeGPTPlus
+codegpt = CodeGPTPlus(api_key=CODEGPT_API_KEY)
+document = codegpt.get_document_by_id('0000000-0000-0000-0000-000000000000')
+document
+>> Document(id='0000000-0000-0000-0000-000000000000',
+            user_id='...',
+            name='My Document',
+            metadata='...',
+            content='Document content', ...)
+```
 
-#example
-my_documents = getAllDocument()
-print(my_documents)
-```  
+#### Upload a document
+**Currently, only text documents are supported**
+```python	
+from judini import CodeGPTPlus
+codegpt = CodeGPTPlus(api_key=CODEGPT_API_KEY)
+codegpt.upload_document('path/to/file.txt')
+>> {'id': '0000000-0000-0000-0000-000000000000'}
+```
 
-### Get Document by ID
+#### Delete a document
 ```python
-def getDocumentById(documentId):
-    """
-    Get Document by ID
-    Returns: 
-        A response object that contains the document data
-    """
-    document = Document(CODEGPT_API_KEY)
-    return document.getDocumentById(documentId)
-
-#example
-documentId = 'YOUR_DOCUMENT_ID'
-my_document = getDocumentById()
-print(my_document)
-```  
-
-### Load Document
-```python
-def loadDocument():
-    """
-    Load document file.
-    Returns: 
-        A response object containing the document's data.
-    """
-    document = Document(CODEGPT_API_KEY)
-    return document.load()
-
-#example
-file = "example.txt" # path of your file
-my_documents = loadDocument(file)
-print(my_documents)
-```  
-
-### Training Document
-```python
-def trainingDocument(documentId):
-    """
-    Training document file.
-    Returns: 
-        A response object containing the document's data.
-    """
-    document = Document(CODEGPT_API_KEY)
-    return document.training(documentId)
-
-#example
-documentId = 'YOUR_DOCUMENT_ID'
-document_to_training = trainingDocument(documentId)
-print(document_to_training)
-```  
-
-### Load and Training Document
-```python
-def loadToTrainingDocument(file):
-    """
-    Load and Training a Document
-    Returns: 
-        A response object that contains the document data
-    """
-    document = Document(CODEGPT_API_KEY)
-    return document.loadAndTraining(file)
-
-#example
-file = "example.txt" # path to your file
-document = loadToTrainingDocument(file)
-print(document)
-```  
+from judini import CodeGPTPlus
+codegpt = CodeGPTPlus(api_key=CODEGPT_API_KEY)
+codegpt.delete_document('0000000-0000-0000-0000-000000000000')
+>> Document deleted successfully
+```
 
 ## MORE EXAMPLES
 You can review more examples in our [Cookbook Repository](https://github.com/judinilabs/cookbook/)
