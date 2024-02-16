@@ -22,6 +22,7 @@ class CodeGPTPlus:
                                 + ' or pass it as an argument.')
         self.headers = {
             'Content-Type': 'application/json',
+            'Channel' : 'SDK_PYTHON',
             'Authorization': 'Bearer ' + api_key
         }
         if not org_id:
@@ -315,18 +316,17 @@ class CodeGPTPlus:
         agent_id: The ID of the agent to update.
         document_ids: The IDs of the documents to associate with the agent.
         """
-        raise NotImplementedError('JUDINI: update_agent_documents is not implemented')
-        # payload = json.dumps({ "agent_documents": document_ids})
-        # response = requests.patch(f"{base_url}/agent/{agent_id}/documents",
-        #                           headers=self.headers,
-        #                           data=payload)
+        payload = json.dumps({ "agent_documents": document_ids})
+        response = requests.patch(f"{base_url}/agent/{agent_id}/documents",
+                                  headers=self.headers,
+                                  data=payload)
         
-        # if response.status_code != 200:
-        #     raise Exception(f'JUDINI: API Response was: {response.status_code}'
-        #                     + f' {response.text} {JUDINI_TUTORIAL}')
+        if response.status_code != 200:
+            raise Exception(f'JUDINI: API Response was: {response.status_code}'
+                            + f' {response.text} {JUDINI_TUTORIAL}')
         
-        # print('Agent documents updated successfully')
-        # return response.json()
+        print('Agent documents updated successfully')
+        return 
 
     #################
     ### DOCUMENTS ###

@@ -38,8 +38,8 @@ print(chat)
 
 # Streaming
 for chunk in codegpt.chat_completion(agent_id=AGENT_ID,
-                                     messages=messages,
-                                     stream=True):
+...                                  messages=messages,
+...                                  stream=True):
     print(chunk, end="")
 ```
 
@@ -82,19 +82,29 @@ codegpt.create_agent(name='Agent name', model='gpt-3.5-turbo',
 from judini import CodeGPTPlus
 codegpt = CodeGPTPlus(api_key=CODEGPT_API_KEY)
 codegpt.update_agent(agent_id='0000000-0000-0000-0000-000000000000',
-                     name='Agent name updated',
-                     model='gpt-4-turbo-preview')
+...                  name='Agent name updated',
+...                  model='gpt-4-turbo-preview')
 >> Agent(id='0000000-0000-0000-0000-000000000000',
 >>       name='Agent name updated', model='gpt-3.5-turbo', ...)                    
 ```
 
-### Delete Agent
+#### Update Agent documents
+```python
+from judini import CodeGPTPlus
+codegpt = CodeGPTPlus(api_key=CODEGPT_API_KEY)
+codegpt.update_agent_documents(agent_id='0000000-0000-0000-0000-000000000000',
+                               document_ids=[DOCUMENT_ID_1, DOCUMENT_ID_2])
+>> "Agent documents updated successfully"
+```
+
+#### Delete Agent
 ```python
 from judini import CodeGPTPlus
 codegpt = CodeGPTPlus(api_key=CODEGPT_API_KEY)
 codegpt.delete_agent('0000000-0000-0000-0000-000000000000')
 >> "Agent deleted successfully"
 ```
+
 
 ### Documents
 #### List all documents
@@ -113,10 +123,10 @@ codegpt = CodeGPTPlus(api_key=CODEGPT_API_KEY)
 document = codegpt.get_document_by_id('0000000-0000-0000-0000-000000000000')
 document
 >> Document(id='0000000-0000-0000-0000-000000000000',
-            user_id='...',
-            name='My Document',
-            metadata='...',
-            content='Document content', ...)
+>>          user_id='...',
+>>          name='My Document',
+>>          metadata='...',
+>>          content='Document content', ...)
 ```
 
 #### Upload a document
