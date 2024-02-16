@@ -23,15 +23,15 @@ class Agent(BaseModel):
     """The type of the agent"""
 
 class DocumentMetadata(BaseModel):
-    title: Optional[str] = None
+    title: Optional[str] = ""
     """The title of the document"""
-    description: Optional[str] = None
+    description: Optional[str] = ""
     """The description of the document"""
-    summary: Optional[str] = None
+    summary: Optional[str] = ""
     """The summary of the document"""
-    keywords: Optional[str] = None
+    keywords: Optional[str] = ""
     """The keywords of the document, separated by commas"""
-    language: Optional[str] = None
+    language: Optional[str] = ""
     """The language of the document"""
 
 
@@ -56,4 +56,7 @@ class Document(BaseModel):
     @field_validator("metadata", mode="before")
     def json_loads(cls, v):
         if v:
-            return json.loads(v)
+            if isinstance(v, str):
+                return json.loads(v)
+            else:
+                return v

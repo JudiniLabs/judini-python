@@ -356,21 +356,91 @@ class CodeGPTPlus:
         
         return Document(**response.json())
     
-    def update_document_metadata(self, document_id: str,
+    def update_document_metadata(self,
+                                 document_id: str,
                                  title: Optional[str] = None,
                                  description: Optional[str] = None,
                                  summary: Optional[str] = None,
                                  keywords: Optional[str] = None,
-                                 language: Optional[str] = None) -> DocumentMetadata:
-        raise NotImplementedError('JUDINI: update_document_metadata is not implemented')
+                                 language: Optional[str] = None):
+        """
+        Updates the metadata of a document in the CodeGPTPlus API.
+
+        Parameters
+        ----------
+        document_id: The ID of the document to update.
+        title: (optional) The updated title of the document.
+        description: (optional) The updated description of the document.
+        summary: (optional) The updated summary of the document.
+        keywords: (optional) The updated keywords of the document.
+        language: (optional) The updated language of the document.
+
+        """
+        document_metadata = self.get_document(document_id).metadata or DocumentMetadata()
+        if title:
+            document_metadata.title = title
+        if description:
+            document_metadata.description = description
+        if summary:
+            document_metadata.summary = summary
+        if keywords:
+            document_metadata.keywords = keywords
+        if language:
+            document_metadata.language = language
+
+        payload = json.dumps(document_metadata.model_dump())
+
+        response = requests.patch(f"{base_url}/document/{document_id}/metadata",
+                                  headers=self.headers,
+                                  data=payload)
+
+        if response.status_code != 200:
+            raise Exception(f'JUDINI: API Response was: {response.status_code} {response.text} {JUDINI_TUTORIAL}')
+        
+        print("Document metadata updated successfully")
+        return
     
-    def upload_document(self, file_path: str) -> Dict[str, str]:
+    def _generate_document_metadata(self, file_path: str) -> DocumentMetadata:
+        """
+        Generates metadata for a document using the CodeGPTPlus API.
+
+        Parameters
+        ----------
+        file_path: The path to the file to generate metadata for.
+
+        Returns
+        -------
+        metadata: A DocumentMetadata object containing the metadata generated
+        by the CodeGPTPlus API.
+        """
+
+        if not os.path.exists(file_path):
+            raise FileNotFoundError(f'JUDINI: File not found: {file_path}')
+        
+        file_type = mimetypes.guess_type(file_path)[0]
+        
+        headers = self.headers.copy()
+        del headers['Content-Type']
+
+        with open(file_path, 'rb') as file:
+            response = requests.post(f"{base_url}/document/metadata",
+                                     headers=headers,
+                                     files={'file': (os.path.basename(file_path), file, file_type)})
+            
+        if response.status_code != 200:
+            raise Exception(f'JUDINI: API Response was: {response.status_code} {response.text} {JUDINI_TUTORIAL}')
+        
+        return DocumentMetadata(**response.json()["metadata"])
+
+    def upload_document(self, file_path: str,
+                        generate_metadata: bool = False) -> Dict[str, str]:
         """
         Uploads a document to the CodeGPTPlus API.
 
         Parameters
         ----------
         file_path: The path to the file to upload.
+        generate_metadata: (optional) Whether to extract metadata from the document.
 
         Returns
         -------
@@ -393,8 +463,18 @@ class CodeGPTPlus:
         if response.status_code != 200:
             raise Exception(f'JUDINI: API Response was: {response.status_code} {response.text} {JUDINI_TUTORIAL}')
         
-        response_json = response.json()
-        return {'id' : response_json['documentId']}
+        document_id = response.json()['documentId']
+        if generate_metadata:
+            try:
+                document_metadata = self._generate_document_metadata(file_path)
+                self.update_document_metadata(document_id, **document_metadata.model_dump())
+                return {'id' : document_id}
+            except:
+                print('Failed to generate document metadata.')
+                return {'id' : document_id}
+
+        return {'id' : document_id}
+        
         
     def delete_document(self, document_id: str) -> None:
         """

@@ -93,7 +93,7 @@ codegpt.update_agent(agent_id='0000000-0000-0000-0000-000000000000',
 from judini import CodeGPTPlus
 codegpt = CodeGPTPlus(api_key=CODEGPT_API_KEY)
 codegpt.delete_agent('0000000-0000-0000-0000-000000000000')
->> Agent deleted successfully
+>> "Agent deleted successfully"
 ```
 
 ### Documents
@@ -124,8 +124,17 @@ document
 ```python	
 from judini import CodeGPTPlus
 codegpt = CodeGPTPlus(api_key=CODEGPT_API_KEY)
-codegpt.upload_document('path/to/file.txt')
+codegpt.upload_document('path/to/file.txt', generate_metadata=False)
 >> {'id': '0000000-0000-0000-0000-000000000000'}
+```
+
+#### Update document metadata
+```python
+from judini import CodeGPTPlus
+codegpt = CodeGPTPlus(api_key=CODEGPT_API_KEY)
+codegpt.update_document_metadata(id='0000000-0000-0000-0000-000000000000',
+                                 title='My Document Updated',)
+>> "Document metadata updated successfully"
 ```
 
 #### Delete a document
@@ -133,7 +142,7 @@ codegpt.upload_document('path/to/file.txt')
 from judini import CodeGPTPlus
 codegpt = CodeGPTPlus(api_key=CODEGPT_API_KEY)
 codegpt.delete_document('0000000-0000-0000-0000-000000000000')
->> Document deleted successfully
+>> "Document deleted successfully"
 ```
 
 ## MORE EXAMPLES
