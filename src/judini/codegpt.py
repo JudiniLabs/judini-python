@@ -10,13 +10,16 @@ base_url = 'https://api-beta.codegpt.co/api/v1'
 JUDINI_TUTORIAL = 'https://api-beta.codegpt.co/api/v1/docs'
 
 class CodeGPTPlus:
-    def __init__(self, api_key: Optional[str] = None, org_id: Optional[str] = None):
+    def __init__(self,
+                 api_key: Optional[str] = None,
+                 org_id: Optional[str] = None):
 
         if not api_key:
             api_key = os.getenv("CODEGPT_API_KEY")
             if not api_key:
-                raise Exception('JUDINI: API key not found. Please set the CODEGPT_API_KEY'
-                                + ' environment variable or pass it as an argument.')
+                raise Exception('JUDINI: API key not found. Please set'
+                                + ' the CODEGPT_API_KEY environment variable'
+                                + ' or pass it as an argument.')
         self.headers = {
             'Content-Type': 'application/json',
             'Authorization': 'Bearer ' + api_key
@@ -55,7 +58,8 @@ class CodeGPTPlus:
         >>> codegpt = CodeGPTPlus(api_key, org_id)
         >>> agent_id = '00000000-0000-0000-0000-000000000000'
         >>> messages = [{'role': 'user', 'content': 'Hello, World!'}]
-        >>> codegpt.chat_completion(agent_id, messages, stream=True, format='text')
+        >>> codegpt.chat_completion(agent_id, messages,
+        ...                         stream=True, format='text')
         'Hello, World!'
         """
         
@@ -66,7 +70,7 @@ class CodeGPTPlus:
             raise ValueError('JUDINI: agent_id should not be empty')
         
         if format not in ['json', 'text']:
-            raise ValueError('JUDINI: format should be either "json" or "text"')
+            raise ValueError('JUDINI: format should be either "json"|"text"')
         
         headers = self.headers.copy()
         headers['media_type'] = 'text/event-stream'
@@ -78,10 +82,12 @@ class CodeGPTPlus:
             "format": "json" # By default always json
         })
 
-        response = requests.post(f"{base_url}/chat/completions", headers=headers,
-                                data=payload, stream=stream)
+        response = requests.post(f"{base_url}/chat/completions",
+                                 headers=headers, data=payload,
+                                 stream=stream)
         if response.status_code != 200:
-            raise Exception(f'JUDINI: API Response was: {response.status_code} {response.text} {JUDINI_TUTORIAL}')
+            raise Exception(f'JUDINI: API Response was: {response.status_code}'
+                            + f' {response.text} {JUDINI_TUTORIAL}')
         
         if stream:
             return handle_stream(response, format)
@@ -97,12 +103,14 @@ class CodeGPTPlus:
         """
         Retrieves a list of all the agents from the CodeGPTPlus API.
 
-        Returns an array of json objects representing agents with the following properties:
+        Returns an array of json objects representing agents with the following
+        properties:
             id: str = The ID of the agent
             name: str = The name of the agent
             prompt: str = The prompt of the agent
             model: str = The model of the agent
-            agent_documents: Optional[List[str]] = The list of documents associated with the agent
+            agent_documents: Optional[List[str]] = The list of documents
+                                                    associated with the agent
             welcome: str = The welcome message of the agent
             pincode: Optional[str] = The pincode of the agent
             is_public: bool = Whether the agent is public or not
@@ -112,7 +120,8 @@ class CodeGPTPlus:
         response = requests.get(f"{base_url}/agent", headers=self.headers)
 
         if response.status_code != 200:
-            raise Exception(f'JUDINI: API Response was: {response.status_code} {response.text} {JUDINI_TUTORIAL}')
+            raise Exception(f'JUDINI: API Response was: {response.status_code}'
+                            + f' {response.text} {JUDINI_TUTORIAL}')
         
         agent_lists = response.json()
         return [Agent(**agent_dict) for agent_dict in agent_lists]
@@ -125,22 +134,26 @@ class CodeGPTPlus:
         ----------
         agent_id: The ID of the agent to retrieve.
 
-        Returns a json object representing the agent with the following properties:
+        Returns a json object representing the agent with the following
+        properties:
             id: str = The ID of the agent
             name: str = The name of the agent
             prompt: str = The prompt of the agent
             model: str = The model of the agent
-            agent_documents: Optional[List[str]] = The list of documents associated with the agent
+            agent_documents: Optional[List[str]] = The list of documents
+                                                   associated with the agent
             welcome: str = The welcome message of the agent
             pincode: Optional[str] = The pincode of the agent
             is_public: bool = Whether the agent is public or not
             agent_type: str = The type of the agent
         """
 
-        response = requests.get(f"{base_url}/agent/{agent_id}?populate=agent_documents", headers=self.headers)
+        response = requests.get(f"{base_url}/agent/{agent_id}?populate=agent_documents",
+                                 headers=self.headers)
 
         if response.status_code != 200:
-            raise Exception(f'JUDINI: API Response was: {response.status_code} {response.text} {JUDINI_TUTORIAL}')
+            raise Exception(f'JUDINI: API Response was: {response.status_code}'
+                            + f' {response.text} {JUDINI_TUTORIAL}')
         
         return Agent(**response.json())
     
@@ -164,12 +177,14 @@ class CodeGPTPlus:
         topk: The number of elements to retrieve from the documents
         temperature: The temperature of the agent.
 
-         Returns a json object representing the agent with the following properties:
+         Returns a json object representing the agent with the following
+         properties:
             id: str = The ID of the agent
             name: str = The name of the agent
             prompt: str = The prompt of the agent
             model: str = The model of the agent
-            agent_documents: Optional[List[str]] = The list of documents associated with the agent
+            agent_documents: Optional[List[str]] = The list of documents
+                                                   associated with the agent
             welcome: str = The welcome message of the agent
             pincode: Optional[str] = The pincode of the agent
             is_public: bool = Whether the agent is public or not
@@ -188,7 +203,8 @@ class CodeGPTPlus:
                                  data=payload)
         
         if response.status_code != 200:
-            raise Exception(f'JUDINI: API Response was: {response.status_code} {response.text} {JUDINI_TUTORIAL}')
+            raise Exception(f'JUDINI: API Response was: {response.status_code}'
+                            + f' {response.text} {JUDINI_TUTORIAL}')
         
         return Agent(**response.json())
     
@@ -214,17 +230,20 @@ class CodeGPTPlus:
         model: (optional) The updated model to be used by the agent.
         prompt: (optional) The updated prompt of the agent.
         welcome: (optional) The updated welcome message of the agent.
-        topk: (optional) The updated number of elements to retrieve from the documents
+        topk: (optional) The updated number of elements to retrieve from the
+                         documents
         temperature: (optional) The updated temperature of the agent.
         is_public: (optional) The updated visibility of the agent.
         pincode: (optional) The updated pincode of the agent.
 
-         Returns a json object representing the agent with the following properties:
+         Returns a json object representing the agent with the following
+         properties:
             id: str = The ID of the agent
             name: str = The name of the agent
             prompt: str = The prompt of the agent
             model: str = The model of the agent
-            agent_documents: Optional[List[str]] = The list of documents associated with the agent
+            agent_documents: Optional[List[str]] = The list of documents
+                                                   associated with the agent
             welcome: str = The welcome message of the agent
             pincode: Optional[str] = The pincode of the agent
             is_public: bool = Whether the agent is public or not
@@ -253,15 +272,17 @@ class CodeGPTPlus:
             payload['pincode'] = pincode
 
         if not payload:
-            raise ValueError('JUDINI: At least one parameter should be provided')
+            raise ValueError('JUDINI: At least one parameter must be provided')
         
         payload = json.dumps(payload)
 
-        response = requests.patch(f"{base_url}/agent/{agent_id}", headers=self.headers,
+        response = requests.patch(f"{base_url}/agent/{agent_id}",
+                                  headers=self.headers,
                                   data=payload)
         
         if response.status_code != 200:
-            raise Exception(f'JUDINI: API Response was: {response.status_code} {response.text} {JUDINI_TUTORIAL}')
+            raise Exception(f'JUDINI: API Response was: {response.status_code}'
+                            + f' {response.text} {JUDINI_TUTORIAL}')
         
         return Agent(**response.json())
     
@@ -275,10 +296,12 @@ class CodeGPTPlus:
         agent_id: The ID of the agent to delete.
         """
 
-        response = requests.delete(f"{base_url}/agent/{agent_id}", headers=self.headers)
+        response = requests.delete(f"{base_url}/agent/{agent_id}",
+                                   headers=self.headers)
         
         if response.status_code != 200:
-            raise Exception(f'JUDINI: API Response was: {response.status_code} {response.text} {JUDINI_TUTORIAL}')
+            raise Exception(f'JUDINI: API Response was: {response.status_code}'
+                            + f' {response.text} {JUDINI_TUTORIAL}')
         
         print('Agent deleted successfully')
         return
@@ -294,11 +317,13 @@ class CodeGPTPlus:
         """
         raise NotImplementedError('JUDINI: update_agent_documents is not implemented')
         # payload = json.dumps({ "agent_documents": document_ids})
-        # response = requests.patch(f"{base_url}/agent/{agent_id}/documents", headers=self.headers,
+        # response = requests.patch(f"{base_url}/agent/{agent_id}/documents",
+        #                           headers=self.headers,
         #                           data=payload)
         
         # if response.status_code != 200:
-        #     raise Exception(f'JUDINI: API Response was: {response.status_code} {response.text} {JUDINI_TUTORIAL}')
+        #     raise Exception(f'JUDINI: API Response was: {response.status_code}'
+        #                     + f' {response.text} {JUDINI_TUTORIAL}')
         
         # print('Agent documents updated successfully')
         # return response.json()
@@ -311,7 +336,8 @@ class CodeGPTPlus:
         """
         Retrieves a list of all the documents from the CodeGPTPlus API.
 
-        Returns an array of json objects representing documents with the following properties:
+        Returns an array of json objects representing documents with the
+        following properties:
             id: str = The ID of the document
             user_id: str = The ID of the user who created the document
             name: str = The name of the document
@@ -325,7 +351,8 @@ class CodeGPTPlus:
         response = requests.get(f"{base_url}/document", headers=self.headers)
 
         if response.status_code != 200:
-            raise Exception(f'JUDINI: API Response was: {response.status_code} {response.text} {JUDINI_TUTORIAL}')
+            raise Exception(f'JUDINI: API Response was: {response.status_code}'
+                            + f' {response.text} {JUDINI_TUTORIAL}')
         
         document_lists = response.json()
         return [Document(**document_dict) for document_dict in document_lists]
@@ -338,7 +365,8 @@ class CodeGPTPlus:
         ----------
         document_id: The ID of the document to retrieve.
 
-        Returns a json object representing the document with the following properties:
+        Returns a json object representing the document with the following
+        properties:
             id: str = The ID of the document
             user_id: str = The ID of the user who created the document
             name: str = The name of the document
@@ -349,10 +377,12 @@ class CodeGPTPlus:
             chunks_count: int = The number of chunks the document was split into
         """
 
-        response = requests.get(f"{base_url}/document/{document_id}", headers=self.headers)
+        response = requests.get(f"{base_url}/document/{document_id}",
+                                headers=self.headers)
 
         if response.status_code != 200:
-            raise Exception(f'JUDINI: API Response was: {response.status_code} {response.text} {JUDINI_TUTORIAL}')
+           raise Exception(f'JUDINI: API Response was: {response.status_code}'
+                            + f' {response.text} {JUDINI_TUTORIAL}')
         
         return Document(**response.json())
     
@@ -376,7 +406,8 @@ class CodeGPTPlus:
         language: (optional) The updated language of the document.
 
         """
-        document_metadata = self.get_document(document_id).metadata or DocumentMetadata()
+        document_metadata = (self.get_document(document_id).metadata or
+                             DocumentMetadata())
         if title:
             document_metadata.title = title
         if description:
@@ -395,7 +426,8 @@ class CodeGPTPlus:
                                   data=payload)
 
         if response.status_code != 200:
-            raise Exception(f'JUDINI: API Response was: {response.status_code} {response.text} {JUDINI_TUTORIAL}')
+            raise Exception(f'JUDINI: API Response was: {response.status_code}'
+                            + f' {response.text} {JUDINI_TUTORIAL}')
         
         print("Document metadata updated successfully")
         return
@@ -423,12 +455,14 @@ class CodeGPTPlus:
         del headers['Content-Type']
 
         with open(file_path, 'rb') as file:
+            file_tuple = (os.path.basename(file_path), file, file_type)
             response = requests.post(f"{base_url}/document/metadata",
                                      headers=headers,
-                                     files={'file': (os.path.basename(file_path), file, file_type)})
+                                     files={'file': file_tuple})
             
         if response.status_code != 200:
-            raise Exception(f'JUDINI: API Response was: {response.status_code} {response.text} {JUDINI_TUTORIAL}')
+            raise Exception(f'JUDINI: API Response was: {response.status_code}'
+                            + f' {response.text} {JUDINI_TUTORIAL}')
         
         return DocumentMetadata(**response.json()["metadata"])
 
@@ -440,11 +474,13 @@ class CodeGPTPlus:
         Parameters
         ----------
         file_path: The path to the file to upload.
-        generate_metadata: (optional) Whether to extract metadata from the document.
+        generate_metadata: (optional) Whether to extract metadata from the
+                                      uploaded document.
 
         Returns
         -------
-        response_json: A dictionary containing the document ID of the uploaded document.
+        response_json: A dictionary containing the document ID of the uploaded
+                       document.
         """
         
         if not os.path.exists(file_path):
@@ -456,18 +492,21 @@ class CodeGPTPlus:
         del headers['Content-Type']
         
         with open(file_path, 'rb') as file:
+            file_tuple = (os.path.basename(file_path), file, file_type)
             response = requests.post(f"{base_url}/document",
                                      headers=headers,
-                                     files={'file': (os.path.basename(file_path), file, file_type)})
+                                     files={'file': file_tuple})
         
         if response.status_code != 200:
-            raise Exception(f'JUDINI: API Response was: {response.status_code} {response.text} {JUDINI_TUTORIAL}')
+            raise Exception(f'JUDINI: API Response was: {response.status_code}'
+                            + f' {response.text} {JUDINI_TUTORIAL}')
         
         document_id = response.json()['documentId']
         if generate_metadata:
             try:
                 document_metadata = self._generate_document_metadata(file_path)
-                self.update_document_metadata(document_id, **document_metadata.model_dump())
+                self.update_document_metadata(document_id,
+                                              **document_metadata.model_dump())
                 return {'id' : document_id}
             except:
                 print('Failed to generate document metadata.')
@@ -485,10 +524,12 @@ class CodeGPTPlus:
         document_id: The ID of the document to delete.
         """
 
-        response = requests.delete(f"{base_url}/document/{document_id}", headers=self.headers)
+        response = requests.delete(f"{base_url}/document/{document_id}",
+                                   headers=self.headers)
         
         if response.status_code != 200:
-            raise Exception(f'JUDINI: API Response was: {response.status_code} {response.text} {JUDINI_TUTORIAL}')
+            raise Exception(f'JUDINI: API Response was: {response.status_code}'
+                            + f' {response.text} {JUDINI_TUTORIAL}')
         
         print('Document deleted successfully')
         return
