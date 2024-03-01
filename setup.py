@@ -22,6 +22,6 @@ setuptools.setup(
     ],
     python_requires=">=3.7",
     install_requires=[
-        "requests", "aiohttp", "asyncio", "python-dotenv", "pydantic"
+        "requests>=2.31.0", "python-dotenv>=1.0.0", "pydantic>=2.5.2"
     ],
 )
