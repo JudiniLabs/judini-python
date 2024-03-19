@@ -49,8 +49,7 @@ class CodeGPTPlus:
     #######################
         
     def chat_completion(self, agent_id: str, messages: List[Dict[str, str]], 
-               stream: bool = False, format: Literal['json', 'text'] = 'text'
-               ) -> str | Dict[str, str]:
+               stream: bool = False) -> str:
         """
         Initiates a chat with the specified agent and handles the streaming of
         responses.
@@ -63,15 +62,13 @@ class CodeGPTPlus:
                   object should have a `role` (which can be 'system', 'user',
                   or 'assistant') and `content` which is the actual message.
         stream: Whether to stream the response or not.
-        format: The format of the response. Can be either 'json' or 'text'.
 
         Example:
         >>> from judini import CodeGPTPlus
         >>> codegpt = CodeGPTPlus(api_key, org_id)
         >>> agent_id = '00000000-0000-0000-0000-000000000000'
         >>> messages = [{'role': 'user', 'content': 'Hello, World!'}]
-        >>> codegpt.chat_completion(agent_id, messages,
-        ...                         stream=True, format='text')
+        >>> codegpt.chat_completion(agent_id, messages, stream=True)
         'Hello, World!'
         """
         
@@ -81,17 +78,15 @@ class CodeGPTPlus:
         if not agent_id:
             raise ValueError('JUDINI: agent_id should not be empty')
         
-        if format not in ['json', 'text']:
-            raise ValueError('JUDINI: format should be either "json"|"text"')
-        
+
         headers = self.headers.copy()
-        headers['media_type'] = 'text/event-stream'
+        headers['accept'] = 'text/event-stream'
 
         payload = json.dumps({
             "agentId": agent_id,
             "messages": messages,
             "stream": stream,
-            "format": "json" # By default always json
+            "format": "text"
         })
 
         response = requests.post(f"{self.base_url}/chat/completions",
@@ -102,9 +97,9 @@ class CodeGPTPlus:
                             + f' {response.text} {JUDINI_TUTORIAL}')
         
         if stream:
-            return handle_stream(response, format)
+            return handle_stream(response)
         else:
-            return handle_non_stream(response, format)
+            return handle_non_stream(response)
         
 
     ##############

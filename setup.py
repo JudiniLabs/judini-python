@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name="judini",
-    version="0.1.11",
+    version="0.1.12",
     author="Judini Inc.",
     author_email="daniel@judini.ai",
     description="CodeGPT python package",
