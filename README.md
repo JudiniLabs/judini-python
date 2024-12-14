@@ -111,11 +111,11 @@ codegpt.get_documents()
 >>  Document(id='0000000-0000-0000-0000-000000000001', ...)]
 ```
 
-#### Get document by ID
+#### Get document
 ```python
 from judini import CodeGPTPlus
 codegpt = CodeGPTPlus(api_key=CODEGPT_API_KEY, org_id=ORG_ID)
-document = codegpt.get_document_by_id('0000000-0000-0000-0000-000000000000')
+document = codegpt.get_document('0000000-0000-0000-0000-000000000000')
 document
 >> Document(id='0000000-0000-0000-0000-000000000000',
 >>          user_id='...',
